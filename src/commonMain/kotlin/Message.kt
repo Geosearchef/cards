@@ -2,6 +2,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import util.math.Vector
 
 @Serializable
 sealed class Message() {
@@ -30,3 +31,8 @@ data class ClientJoinSeatMessage(val seatId: Int) : Message()
 data class ServerPlayerJoinSeatMessage(val playerName: String, val seatId: Int) : Message()
 @Serializable
 data class ServerPlayerLeaveSeatMessage(val playerName: String, val seatId: Int) : Message()
+
+@Serializable
+data class ClientCursorPositionMessage(val pos: Vector) : Message()
+@Serializable
+data class ServerCursorPositionMessage(val playerName: String, val pos: Vector) : Message()

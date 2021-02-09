@@ -5,7 +5,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 object Util {
-    fun currentTimeMillis() = Date().getTime()
+    fun currentTimeMillis() = Date().getTime().toLong()
 }
 
 fun Double.toDecimals(n: Int): String {

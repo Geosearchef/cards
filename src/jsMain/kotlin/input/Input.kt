@@ -1,5 +1,6 @@
 package input
 
+import CardSimulatorClient
 import framework.scene.SceneInput
 import game.Table
 import org.w3c.dom.events.KeyboardEvent
@@ -20,14 +21,17 @@ object Input : SceneInput() {
 
         if(isTableMoving) {
             Table.offset += mouseMovement / Table.scale
+            CardSimulatorClient.requestRender()
+        } else {
+            Table.PlayerCursors.onCursorMovement(mousePositionTable)
         }
+
     }
 
     override fun onMouseDown(event: MouseEvent, isOnUI: Boolean) {
         if(isOnUI) {
             return
         }
-
 
         if(event.button.toInt() == 0) {
             isTableMoving = true
@@ -48,6 +52,7 @@ object Input : SceneInput() {
 
         Table.scale /= ZOOM_FACTOR.pow(event.deltaY)
         Table.offset = (mousePosition / Table.scale) - mousePositionTable
+        CardSimulatorClient.requestRender()
     }
 
     override fun onKeyDown(event: KeyboardEvent) {

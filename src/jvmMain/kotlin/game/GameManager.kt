@@ -1,5 +1,6 @@
 package game
 
+import ClientCursorPositionMessage
 import ClientJoinSeatMessage
 import GameInfo
 import Message
@@ -37,6 +38,9 @@ object GameManager {
             when (msg) {
                 is ClientJoinSeatMessage -> {
                     playerJoinSeat(player, msg.seatId)
+                }
+                is ClientCursorPositionMessage -> {
+                    player.updateCursorPosition(msg.pos)
                 }
             }
         }

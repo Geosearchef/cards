@@ -1,12 +1,17 @@
 package rendering
 
+import CardSimulatorClient
 import framework.rendering.color
+import framework.rendering.fillCircle
 import framework.rendering.setIdentityMatrix
 import framework.scene.Scene.SceneRenderer
+import game.Game
 import game.Table
 import org.w3c.dom.CanvasRenderingContext2D
 
 object Rendering : SceneRenderer {
+
+    private const val PLAYER_CURSOR_RADIUS = 8.0
 
     override fun render(ctx: CanvasRenderingContext2D) {
         renderTable(ctx)
@@ -34,7 +39,18 @@ object Rendering : SceneRenderer {
 //            ctx.lineTo(10000, y + 0.5);
 //        }
 
+        renderPlayerCursors(ctx)
+
         ctx.setIdentityMatrix()
+    }
+
+    fun renderPlayerCursors(ctx: CanvasRenderingContext2D) {
+        Game.players.filter { it != CardSimulatorClient.username }.forEach { player ->
+            Table.PlayerCursors.renderedCursorPositionByPlayer[player]?.let { cursor ->
+                ctx.color(Game.getPlayerColor(player) ?: "444444")
+                ctx.fillCircle(cursor, PLAYER_CURSOR_RADIUS)
+            }
+        }
     }
 
 }
