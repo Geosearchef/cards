@@ -32,6 +32,10 @@ object Game {
                 playersBySeat.remove(msg.seatId)
                 SeatsView.recreate()
             }
+
+            else -> {
+                console.log("Received message of unknown type: ${msg::class}")
+            }
         }
     }
 
