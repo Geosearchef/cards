@@ -4,6 +4,7 @@ import framework.rendering.Image
 
 object AssetManager {
     const val ASSETS_BASE_URL = "/asset/"
+    var ASSET_TOKEN = ""
 
     val assetsByName: MutableMap<String, Asset> = HashMap()
 
@@ -17,7 +18,7 @@ object AssetManager {
             }
         } else {
             console.log("Loading asset: " + name)
-            assetsByName[name] = Asset(name, Image(ASSETS_BASE_URL + name))
+            assetsByName[name] = Asset(name, Image(ASSETS_BASE_URL + name + "?token=" + ASSET_TOKEN))
             return null
         }
     }

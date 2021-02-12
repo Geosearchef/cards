@@ -11,6 +11,7 @@ import ServerLoginMessage
 import ServerPlayerJoinSeatMessage
 import ServerPlayerLeaveSeatMessage
 import ServerRemoveGameObjectMessage
+import assets.AssetManager
 import websocket.WebsocketClient
 
 object Game {
@@ -29,6 +30,7 @@ object Game {
                 console.log("Successfully logged in, got game info, table with ${msg.gameInfo.seats.size}")
 
                 gameInfo = msg.gameInfo
+                AssetManager.ASSET_TOKEN = msg.assetToken
                 SeatsView.init()
             }
 

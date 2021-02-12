@@ -37,8 +37,8 @@ object GameManager {
         TaskProcessor.addTask {
             val cardSize = Vector(100.0, 100.0 * (1060.0 / 680.0))
 
-            for(i in 0 until 13) {
-                addGameObject(Card(Vector(i * (cardSize.x + 30.0), 0.0), cardSize, "CardA$i.png", "CardAB.png"))
+            for(i in 1..13) {
+                addGameObject(Card(Vector(i * (cardSize.x + 30.0), 0.0), cardSize, "CardA$i.jpg", "CardAB.jpg"))
             }
         }
     }

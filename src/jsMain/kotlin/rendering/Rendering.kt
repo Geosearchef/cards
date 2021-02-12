@@ -19,7 +19,7 @@ object Rendering : SceneRenderer {
 
     private const val PLAYER_CURSOR_RADIUS = 8.0
     private const val CARD_OUTLINE_COLOR = "#222222"
-    private const val CARD_OUTLINE_WIDTH = 5.0
+    private const val CARD_OUTLINE_WIDTH = 2.0
 
     override fun render(ctx: CanvasRenderingContext2D) {
         renderTable(ctx)
@@ -78,7 +78,9 @@ object Rendering : SceneRenderer {
 
                         ctx.color(CARD_OUTLINE_COLOR)
                         ctx.lineWidth = CARD_OUTLINE_WIDTH
-
+                        ctx.beginPath()
+                        ctx.rect(it.pos.x, it.pos.y, it.size.x, it.size.y)
+                        ctx.stroke()
                         ctx.lineWidth = 1.0
                     } else {
                         ctx.color("#333333")

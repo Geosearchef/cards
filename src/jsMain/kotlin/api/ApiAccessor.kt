@@ -5,7 +5,7 @@ import org.w3c.xhr.XMLHttpRequest
 object ApiAccessor {
 
     fun init() {
-        exampleRequest()
+//        exampleRequest()
     }
 
     fun exampleRequest() { // TODO: generify
