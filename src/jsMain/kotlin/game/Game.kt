@@ -5,10 +5,12 @@ import ClientJoinSeatMessage
 import GameInfo
 import Message
 import SeatInfo
+import ServerAddGameObjectMessage
 import ServerCursorPositionMessage
 import ServerLoginMessage
 import ServerPlayerJoinSeatMessage
 import ServerPlayerLeaveSeatMessage
+import ServerRemoveGameObjectMessage
 import websocket.WebsocketClient
 
 object Game {
@@ -19,6 +21,7 @@ object Game {
 
     var ownSeat: Int? = null
 
+    val gameObjects: MutableList<GameObject> = ArrayList()
 
     fun onServerMessage(msg: Message) {
         when(msg) {
@@ -46,6 +49,16 @@ object Game {
 
             is ServerCursorPositionMessage -> {
                 Table.PlayerCursors.onServerCursorPositionUpdate(msg.playerName, msg.pos)
+            }
+
+            is ServerAddGameObjectMessage -> {
+                gameObjects.add(msg.gameObject)
+                console.log("Got game object: ")
+                console.log(msg.gameObject)
+            }
+
+            is ServerRemoveGameObjectMessage -> {
+                gameObjects.removeAll { it.id == msg.id }
             }
 
             else -> {

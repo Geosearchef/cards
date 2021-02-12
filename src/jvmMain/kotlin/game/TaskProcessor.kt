@@ -20,7 +20,7 @@ object TaskProcessor {
                     try {
                         task.runnable.run()
                     } catch(e: Exception) {
-                        log.warn("Error while processing task from ${(task.source as? Player?)?.username ?: "server"}")
+                        log.warn("Error while processing task from ${(task.source as? Player?)?.username ?: "server"}", e)
                     }
                 } else {
                     break
@@ -49,7 +49,9 @@ object TaskProcessor {
     }
 
     fun verifyTaskThread() {
-        check(Thread.currentThread() == workerThread)
+        if(Thread.currentThread() != workerThread) {
+            log.error("Verification of task thread failed", RuntimeException())
+        }
     }
 
     data class Task(val source: Any?, val runnable: Runnable)

@@ -1,3 +1,4 @@
+import game.GameObject
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -36,3 +37,9 @@ data class ServerPlayerLeaveSeatMessage(val playerName: String, val seatId: Int)
 data class ClientCursorPositionMessage(val pos: Vector) : Message()
 @Serializable
 data class ServerCursorPositionMessage(val playerName: String, val pos: Vector) : Message()
+
+@Serializable
+data class ServerAddGameObjectMessage(val gameObject: GameObject) : Message()
+
+@Serializable
+data class ServerRemoveGameObjectMessage(val id: Long) : Message()
