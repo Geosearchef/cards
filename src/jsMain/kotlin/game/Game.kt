@@ -22,8 +22,6 @@ object Game {
 
     var ownSeat: Int? = null
 
-    val gameObjects: MutableList<GameObject> = ArrayList()
-
     fun onServerMessage(msg: Message) {
         when(msg) {
             is ServerLoginMessage -> {
@@ -54,13 +52,13 @@ object Game {
             }
 
             is ServerAddGameObjectMessage -> {
-                gameObjects.add(msg.gameObject)
+                Table.gameObjects.add(msg.gameObject)
                 console.log("Got game object: ")
                 console.log(msg.gameObject)
             }
 
             is ServerRemoveGameObjectMessage -> {
-                gameObjects.removeAll { it.id == msg.id }
+                Table.gameObjects.removeAll { it.id == msg.id }
             }
 
             else -> {

@@ -69,3 +69,25 @@ fun CanvasRenderingContext2D.color(c: String) {
     fillStyle = c
     strokeStyle = c
 }
+
+fun CanvasRenderingContext2D.roundRect(rect: Rectangle, radius: Double): CanvasRenderingContext2D {
+    val x = rect.x
+    val y = rect.y
+    val w = rect.width
+    val h = rect.height
+    var r = radius
+    if (w < 2 * r) {
+        r = w / 2
+    }
+    if (h < 2 * r) {
+        r = h / 2
+    }
+    this.beginPath()
+    this.moveTo(x+r, y)
+    this.arcTo(x + w, y, x + w, y + h, r)
+    this.arcTo(x + w, y + h, x, y + h, r)
+    this.arcTo(x, y + h, x, y, r)
+    this.arcTo(x, y, x + w, y, r)
+    this.closePath()
+    return this
+}

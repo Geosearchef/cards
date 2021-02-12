@@ -35,10 +35,10 @@ object GameManager {
     // create test objects
     fun init() {
         TaskProcessor.addTask {
-            val cardSize = Vector(100.0, 100.0 * (1060.0 / 680.0))
+            val cardSize = Vector(57.0, 57.0 * (1060.0 / 680.0))  // 57.0 x 88.8
 
             for(i in 1..13) {
-                addGameObject(Card(Vector(i * (cardSize.x + 30.0), 0.0), cardSize, "CardA$i.jpg", "CardAB.jpg"))
+                addGameObject(Card(Vector(i * (cardSize.x + 15.0), 0.0), cardSize, "CardA$i.png", "CardAB.png"))
             }
         }
     }

@@ -16,3 +16,7 @@
 - touch?
 
 render everything
+
+enhancements:
+
+options, sliders for card corner radius, line width

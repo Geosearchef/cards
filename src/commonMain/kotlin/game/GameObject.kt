@@ -1,6 +1,7 @@
 package game
 
 import kotlinx.serialization.Serializable
+import util.math.Rectangle
 import util.math.Vector
 
 @Serializable
@@ -14,6 +15,7 @@ sealed class GameObject() {
     var flipped: Boolean = false
 
     val aspectRatio: Double get() = size.y / size.x
+    val rect: Rectangle get() = Rectangle(pos, size.x, size.y)
 }
 
 @Serializable

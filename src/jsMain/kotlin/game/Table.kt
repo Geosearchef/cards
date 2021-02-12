@@ -11,8 +11,9 @@ import kotlin.math.log2
 object Table {
 
     var offset = Vector(0.0, 0.0)
-    var scale = 1.0
+    var scale = 2.0
 
+    val gameObjects: MutableList<GameObject> = ArrayList()
 
 
     object PlayerCursors {

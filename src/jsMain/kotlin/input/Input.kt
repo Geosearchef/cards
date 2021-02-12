@@ -12,6 +12,9 @@ import kotlin.math.pow
 object Input : SceneInput() {
 
     private const val ZOOM_FACTOR = 1.05
+    private const val MIN_ZOOM = 0.8
+    private const val MAX_ZOOM = 9.0
+
 
     var isTableMoving = false
     var mousePositionTable = Vector(0.0, 0.0)
@@ -51,6 +54,9 @@ object Input : SceneInput() {
         }
 
         Table.scale /= ZOOM_FACTOR.pow(event.deltaY)
+
+        Table.scale = minOf(MAX_ZOOM, maxOf(MIN_ZOOM, Table.scale))
+
         Table.offset = (mousePosition / Table.scale) - mousePositionTable
         CardSimulatorClient.requestRender()
     }
