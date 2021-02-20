@@ -4,6 +4,7 @@ import CardSimulatorClient
 import ClientCursorPositionMessage
 import kotlinx.browser.window
 import util.Util
+import util.math.Rectangle
 import util.math.Vector
 import websocket.WebsocketClient
 import kotlin.math.log2
@@ -14,6 +15,15 @@ object Table {
     var scale = 2.0
 
     val gameObjects: MutableList<GameObject> = ArrayList()
+
+    val selectedGameObjects: MutableList<GameObject> = ArrayList()
+
+
+    fun updateSelection(rect: Rectangle) {
+        selectedGameObjects.clear()
+
+        gameObjects.filter { it.center in rect }.forEach(selectedGameObjects::add)
+    }
 
 
     object PlayerCursors {

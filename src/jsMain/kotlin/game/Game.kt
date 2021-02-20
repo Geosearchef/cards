@@ -59,6 +59,7 @@ object Game {
 
             is ServerRemoveGameObjectMessage -> {
                 Table.gameObjects.removeAll { it.id == msg.id }
+                Table.selectedGameObjects.removeAll { it.id == msg.id }
             }
 
             else -> {

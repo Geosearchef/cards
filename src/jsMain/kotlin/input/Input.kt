@@ -2,11 +2,13 @@ package input
 
 import CardSimulatorClient
 import framework.scene.SceneInput
+import game.GameObject
 import game.Table
 import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.MouseEvent
 import org.w3c.dom.events.WheelEvent
 import util.math.Vector
+import util.math.rectangleOf
 import kotlin.math.pow
 
 object Input : SceneInput() {
@@ -16,8 +18,13 @@ object Input : SceneInput() {
     private const val MAX_ZOOM = 9.0
 
 
-    var isTableMoving = false
     var mousePositionTable = Vector(0.0, 0.0)
+
+    var isTableMoving = false
+    var selectionAreaStart: Vector? = null
+
+    var grabbedGameObject: GameObject? = null
+    var grabOffset: Vector = Vector()
 
     override fun onMouseMove(event: MouseEvent, isOnUI: Boolean) {
         mousePositionTable = (mousePosition / Table.scale) - Table.offset
@@ -29,6 +36,17 @@ object Input : SceneInput() {
             Table.PlayerCursors.onCursorMovement(mousePositionTable)
         }
 
+        selectionAreaStart?.let { selectionAreaStart ->
+            Table.updateSelection(rectangleOf(selectionAreaStart, mousePositionTable))
+        }
+
+        grabbedGameObject?.let { grabbedGameObject ->
+            grabbedGameObject.pos = mousePositionTable - grabOffset
+            Table.selectedGameObjects.filter { it != grabbedGameObject }.forEach {
+                it.pos += mouseMovement / Table.scale
+            }
+            //TODO: transmit
+        }
     }
 
     override fun onMouseDown(event: MouseEvent, isOnUI: Boolean) {
@@ -37,13 +55,31 @@ object Input : SceneInput() {
         }
 
         if(event.button.toInt() == 0) {
-            isTableMoving = true
+            if(event.shiftKey) {
+                selectionAreaStart = mousePositionTable
+            } else {
+                val pressedGameObject = Table.gameObjects.find { mousePositionTable in it.rect }
+                if(pressedGameObject != null) {
+                    if(!Table.selectedGameObjects.contains(pressedGameObject)) {
+                        Table.selectedGameObjects.clear()
+                        Table.selectedGameObjects.add(pressedGameObject)
+                    }
+
+                    grabbedGameObject = pressedGameObject
+                    grabOffset = mousePositionTable - pressedGameObject.pos
+                } else {
+                    isTableMoving = true
+                    Table.selectedGameObjects.clear()
+                }
+            }
         }
     }
 
     override fun onMouseUp(event: MouseEvent, isOnUI: Boolean) {
 
         if(event.button.toInt() == 0) {
+            selectionAreaStart = null
+            grabbedGameObject = null
             isTableMoving = false
         }
     }

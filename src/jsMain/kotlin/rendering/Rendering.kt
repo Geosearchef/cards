@@ -7,6 +7,7 @@ import framework.scene.Scene.SceneRenderer
 import game.Card
 import game.Game
 import game.Table
+import input.Input
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HIGH
 import org.w3c.dom.ImageSmoothingQuality
@@ -18,6 +19,8 @@ object Rendering : SceneRenderer {
     private const val CARD_OUTLINE_COLOR = "#222222"
     private const val CARD_OUTLINE_WIDTH = 1.2
     private const val CARD_OUTLINE_RADIUS = 4.0
+    private const val AREA_SELECTION_COLOR = "#4fb3ff"
+    private const val CARD_OUTLINE_COLOR_SELECTED = "#4fb3ff"
 
     override fun render(ctx: CanvasRenderingContext2D) {
         renderTable(ctx)
@@ -46,13 +49,13 @@ object Rendering : SceneRenderer {
 //        }
 
         renderGameObjects(ctx)
-
         renderPlayerCursors(ctx)
+        renderSelectionArea(ctx)
 
         ctx.setIdentityMatrix()
     }
 
-    fun renderPlayerCursors(ctx: CanvasRenderingContext2D) {
+    private fun renderPlayerCursors(ctx: CanvasRenderingContext2D) {
         Game.players.filter { it != CardSimulatorClient.username }.forEach { player ->
             Table.PlayerCursors.renderedCursorPositionByPlayer[player]?.let { cursor ->
                 ctx.color(Game.getPlayerColor(player) ?: "444444")
@@ -61,7 +64,7 @@ object Rendering : SceneRenderer {
         }
     }
 
-    fun renderGameObjects(ctx: CanvasRenderingContext2D) {
+    private fun renderGameObjects(ctx: CanvasRenderingContext2D) {
         ctx.imageSmoothingEnabled = true
         ctx.imageSmoothingQuality = ImageSmoothingQuality.HIGH
 
@@ -79,7 +82,7 @@ object Rendering : SceneRenderer {
                             ctx.drawImage(image, it.pos.x, it.pos.y, it.size.x, it.size.y)
                         }
 
-                        ctx.color(CARD_OUTLINE_COLOR)
+                        ctx.color(if(Table.selectedGameObjects.contains(it)) CARD_OUTLINE_COLOR_SELECTED else CARD_OUTLINE_COLOR)
                         ctx.lineWidth = CARD_OUTLINE_WIDTH
 //                        ctx.beginPath()
 //                        ctx.rect(it.pos.x, it.pos.y, it.size.x, it.size.y)
@@ -96,5 +99,15 @@ object Rendering : SceneRenderer {
                 else -> console.log("Couldn't render GameObject of unknown type")
             }
         }
+    }
+
+    private fun renderSelectionArea(ctx: CanvasRenderingContext2D) {
+        Input.selectionAreaStart?.let{ selectionAreaStart ->
+            ctx.color(AREA_SELECTION_COLOR)
+            ctx.globalAlpha = 0.3
+            ctx.fillRect(selectionAreaStart, Input.mousePositionTable)
+            ctx.globalAlpha = 1.0
+        }
+
     }
 }
