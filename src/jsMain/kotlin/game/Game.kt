@@ -64,10 +64,7 @@ object Game {
             }
 
             is ServerGameObjectPositionMessage -> {
-                if(msg.seat != ownSeat) {
-                    Table.gameObjects.find { it.id == msg.id }?.let { it.pos = msg.pos }
-                    //TODO: smooth game object to server received position ALWAYS
-                }
+                Table.gameObjects.find { it.id == msg.id }?.let { Table.onServerGameObjectPosition(it, msg.pos) }
             }
 
             else -> {

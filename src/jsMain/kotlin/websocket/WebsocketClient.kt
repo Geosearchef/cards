@@ -15,12 +15,25 @@ object WebsocketClient {
 
     lateinit var socket: WebSocket
 
+    // stats
+    var transmittedMessages = 0
+    var receivedMessages = 0
+    var transmittedBytes = 0
+    var receivedBytes = 0
+
     fun send(message: Message) {
-        socket.send(message.toJson())
+        val json = message.toJson()
+        socket.send(json)
+
+        transmittedMessages++
+        transmittedBytes += json.length
     }
 
     fun onSocketMessage(event: MessageEvent) {
         val message = Message.fromJson(event.data.toString())
+
+        receivedMessages++
+        receivedBytes += event.data.toString().length
 
         if(message is ServerEchoRequestMessage) {
             send(ClientEchoReplyMessage(message.serverTimestamp))

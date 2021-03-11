@@ -69,7 +69,7 @@ object GameManager {
                     playerJoinSeat(player, msg.seatId)
                 }
                 is ClientCursorPositionMessage -> {
-                    player.updateCursorPosition(msg.pos)
+                    player.updateCursorPosition(msg.p)
                 }
                 is ClientGameObjectPositionMessage -> {
                     gameObjects.find { it.id == msg.id }?.let { player.onGameObjectMoved(it, msg.pos) }

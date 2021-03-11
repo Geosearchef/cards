@@ -38,7 +38,7 @@ object Input : SceneInput() {
         }
 
         selectionAreaStart?.let { selectionAreaStart ->
-            Table.updateSelection(rectangleOf(selectionAreaStart, mousePositionTable))
+            Table.setSelection(rectangleOf(selectionAreaStart, mousePositionTable))
         }
 
         grabbedGameObject?.let { grabbedGameObject ->
@@ -47,7 +47,7 @@ object Input : SceneInput() {
                 it.pos += mouseMovement / Table.scale
             }
 
-            Table.selectedGameObjects.forEach { Table.updateGameObjectPosition(it) }
+            Table.selectedGameObjects.forEach { Table.onGameObjectMoved(it) }
         }
     }
 
@@ -60,7 +60,7 @@ object Input : SceneInput() {
             if(event.shiftKey) {
                 selectionAreaStart = mousePositionTable
             } else {
-                val pressedGameObject = Table.gameObjects.find { mousePositionTable in it.rect }
+                val pressedGameObject = Table.gameObjects.findLast { mousePositionTable in it.rect } // sorted by last moved --> search last one
                 if(pressedGameObject != null) {
                     if(!Table.selectedGameObjects.contains(pressedGameObject)) {
                         Table.selectedGameObjects.clear()
@@ -71,6 +71,8 @@ object Input : SceneInput() {
                     if(Game.ownSeat != null) {
                         grabbedGameObject = pressedGameObject
                         grabOffset = mousePositionTable - pressedGameObject.pos
+
+                        Table.selectedGameObjects.forEach { it.clientExtension.grabbed = true }
                     }
                 } else {
                     isTableMoving = true
@@ -86,6 +88,8 @@ object Input : SceneInput() {
             selectionAreaStart = null
             grabbedGameObject = null
             isTableMoving = false
+
+            Table.gameObjects.forEach { it.clientExtension.grabbed = false }
         }
     }
 

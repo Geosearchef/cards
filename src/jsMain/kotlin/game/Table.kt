@@ -8,7 +8,7 @@ import util.Util
 import util.math.Rectangle
 import util.math.Vector
 import websocket.WebsocketClient
-import kotlin.math.log2
+import kotlin.math.pow
 
 object Table {
 
@@ -22,15 +22,28 @@ object Table {
     val selectedGameObjects: MutableList<GameObject> = ArrayList()
 
 
-    fun updateSelection(rect: Rectangle) {
+    fun update(delta: Double) {
+        gameObjects.forEach { it.clientExtension.update(delta) }
+    }
+
+
+
+    fun onServerGameObjectPosition(gameObject: GameObject, pos: Vector) {
+        gameObject.clientExtension.serverPos = pos
+        gameObject.clientExtension.lastMovedOnServer = Util.currentTimeMillis()
+    }
+
+    fun setSelection(rect: Rectangle) {
         selectedGameObjects.clear()
 
         gameObjects.filter { it.center in rect }.forEach(selectedGameObjects::add)
     }
 
 
+
+    // client sided
     var lastUpdateByGameObject: MutableMap<Long, Long> = HashMap()
-    fun updateGameObjectPosition(gameObject: GameObject) {
+    fun onGameObjectMoved(gameObject: GameObject) {
         if(lastUpdateByGameObject[gameObject.id] == null || lastUpdateByGameObject[gameObject.id]!! + GAME_OBJECT_UPDATE_INTERVAL_MS < Util.currentTimeMillis()) {
             transmitGameObjectPosition(gameObject)
         } else {
@@ -65,20 +78,27 @@ object Table {
                 val target = it.value
                 val current = renderedCursorPositionByPlayer.getOrPut(it.key, { target })
 
-                if(target == current) {
-                    return@forEach
-                }
+//                if(target == current) {
+//                    return@forEach
+//                }
+//
+//                val toTarget = target - current
+//                val targetDistance = toTarget.length()
+//                val speed = log2((targetDistance / 30.0) + 1.0) * 800.0
+//
+//                var change = toTarget.normalise() * speed * delta
+//                if(change.length() >= targetDistance) {
+//                    change = toTarget
+//                }
+//
+//                renderedCursorPositionByPlayer[it.key] = current + change
 
-                val toTarget = target - current
-                val targetDistance = toTarget.length()
-                val speed = log2((targetDistance / 30.0) + 1.0) * 800.0
 
-                var change = toTarget.normalise() * speed * delta
-                if(change.length() >= targetDistance) {
-                    change = toTarget
-                }
+                val p = 0.8
+                val d = delta * 190.0
 
-                renderedCursorPositionByPlayer[it.key] = current + change
+                // (p.pow(d) - 1.0) / (p - 1.0) = sum p^(k-1),k=1 to n
+                renderedCursorPositionByPlayer[it.key] = (current * p.pow(d)) + (target * (1.0 - p) * (p.pow(d) - 1.0) / (p - 1.0))
             }
         }
 
