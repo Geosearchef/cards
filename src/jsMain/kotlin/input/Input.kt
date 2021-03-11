@@ -2,6 +2,7 @@ package input
 
 import CardSimulatorClient
 import framework.scene.SceneInput
+import game.Game
 import game.GameObject
 import game.Table
 import org.w3c.dom.events.KeyboardEvent
@@ -45,7 +46,8 @@ object Input : SceneInput() {
             Table.selectedGameObjects.filter { it != grabbedGameObject }.forEach {
                 it.pos += mouseMovement / Table.scale
             }
-            //TODO: transmit
+
+            Table.selectedGameObjects.forEach { Table.updateGameObjectPosition(it) }
         }
     }
 
@@ -65,8 +67,11 @@ object Input : SceneInput() {
                         Table.selectedGameObjects.add(pressedGameObject)
                     }
 
-                    grabbedGameObject = pressedGameObject
-                    grabOffset = mousePositionTable - pressedGameObject.pos
+                    // grab
+                    if(Game.ownSeat != null) {
+                        grabbedGameObject = pressedGameObject
+                        grabOffset = mousePositionTable - pressedGameObject.pos
+                    }
                 } else {
                     isTableMoving = true
                     Table.selectedGameObjects.clear()

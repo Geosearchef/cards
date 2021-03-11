@@ -44,6 +44,10 @@ object PlayerManager {
             log.info("${session.getRemoteHostAddress()} attempted to use blank username")
             return false
         }
+        if(username.length > 30) {
+            log.info("${session.getRemoteHostAddress()} attempted to use a long username")
+            return false
+        }
         if(players.none { it.username == username }) {
             log.info("${session.getRemoteHostAddress()} logged in as $username")
             TaskProcessor.addTask { addPlayer(Player(username, session)) }

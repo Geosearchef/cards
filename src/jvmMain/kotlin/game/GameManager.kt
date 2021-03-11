@@ -1,6 +1,7 @@
 package game
 
 import ClientCursorPositionMessage
+import ClientGameObjectPositionMessage
 import ClientJoinSeatMessage
 import GameInfo
 import Message
@@ -69,6 +70,9 @@ object GameManager {
                 }
                 is ClientCursorPositionMessage -> {
                     player.updateCursorPosition(msg.pos)
+                }
+                is ClientGameObjectPositionMessage -> {
+                    gameObjects.find { it.id == msg.id }?.let { player.onGameObjectMoved(it, msg.pos) }
                 }
             }
         }

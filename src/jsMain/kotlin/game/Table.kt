@@ -2,6 +2,7 @@ package game
 
 import CardSimulatorClient
 import ClientCursorPositionMessage
+import ClientGameObjectPositionMessage
 import kotlinx.browser.window
 import util.Util
 import util.math.Rectangle
@@ -10,6 +11,8 @@ import websocket.WebsocketClient
 import kotlin.math.log2
 
 object Table {
+
+    private const val GAME_OBJECT_UPDATE_INTERVAL_MS = 16
 
     var offset = Vector(0.0, 0.0)
     var scale = 2.0
@@ -26,8 +29,28 @@ object Table {
     }
 
 
+    var lastUpdateByGameObject: MutableMap<Long, Long> = HashMap()
+    fun updateGameObjectPosition(gameObject: GameObject) {
+        if(lastUpdateByGameObject[gameObject.id] == null || lastUpdateByGameObject[gameObject.id]!! + GAME_OBJECT_UPDATE_INTERVAL_MS < Util.currentTimeMillis()) {
+            transmitGameObjectPosition(gameObject)
+        } else {
+            val newPos = gameObject.pos
+            window.setTimeout({
+                if(gameObject.pos == newPos) {
+                    transmitGameObjectPosition(gameObject)
+                }
+            }, GAME_OBJECT_UPDATE_INTERVAL_MS)
+        }
+    }
+
+    fun transmitGameObjectPosition(gameObject: GameObject) {
+        WebsocketClient.send(ClientGameObjectPositionMessage(gameObject.pos, gameObject.id))
+        lastUpdateByGameObject[gameObject.id] = Util.currentTimeMillis()
+    }
+
+
     object PlayerCursors {
-        private const val CURSOR_UPDATE_INTERVAL_MS = 50
+        private const val CURSOR_UPDATE_INTERVAL_MS = 33
 
         val cursorPositionByPlayer: MutableMap<String, Vector> = HashMap()
         val renderedCursorPositionByPlayer: MutableMap<String, Vector> = HashMap() // smoothed

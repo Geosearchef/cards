@@ -36,10 +36,15 @@ data class ServerPlayerLeaveSeatMessage(val playerName: String, val seatId: Int)
 @Serializable
 data class ClientCursorPositionMessage(val pos: Vector) : Message()
 @Serializable
-data class ServerCursorPositionMessage(val playerName: String, val pos: Vector) : Message()
+data class ServerCursorPositionMessage(val player: String, val pos: Vector) : Message()
 
 @Serializable
 data class ServerAddGameObjectMessage(val gameObject: GameObject) : Message()
 
 @Serializable
 data class ServerRemoveGameObjectMessage(val id: Long) : Message()
+
+@Serializable
+data class ClientGameObjectPositionMessage(val pos: Vector, val id: Long) : Message()
+@Serializable
+data class ServerGameObjectPositionMessage(val pos: Vector, val id: Long, val seat: Int) : Message()

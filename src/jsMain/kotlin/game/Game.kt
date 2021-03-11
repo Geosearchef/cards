@@ -7,6 +7,7 @@ import Message
 import SeatInfo
 import ServerAddGameObjectMessage
 import ServerCursorPositionMessage
+import ServerGameObjectPositionMessage
 import ServerLoginMessage
 import ServerPlayerJoinSeatMessage
 import ServerPlayerLeaveSeatMessage
@@ -48,7 +49,7 @@ object Game {
             }
 
             is ServerCursorPositionMessage -> {
-                Table.PlayerCursors.onServerCursorPositionUpdate(msg.playerName, msg.pos)
+                Table.PlayerCursors.onServerCursorPositionUpdate(msg.player, msg.pos)
             }
 
             is ServerAddGameObjectMessage -> {
@@ -60,6 +61,13 @@ object Game {
             is ServerRemoveGameObjectMessage -> {
                 Table.gameObjects.removeAll { it.id == msg.id }
                 Table.selectedGameObjects.removeAll { it.id == msg.id }
+            }
+
+            is ServerGameObjectPositionMessage -> {
+                if(msg.seat != ownSeat) {
+                    Table.gameObjects.find { it.id == msg.id }?.let { it.pos = msg.pos }
+                    //TODO: smooth game object to server received position ALWAYS
+                }
             }
 
             else -> {
