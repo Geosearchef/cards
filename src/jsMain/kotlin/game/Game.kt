@@ -12,12 +12,16 @@ import ServerLoginMessage
 import ServerPlayerJoinSeatMessage
 import ServerPlayerLeaveSeatMessage
 import ServerRemoveGameObjectMessage
+import ServerSetGameObjectsFlippedMessage
 import assets.AssetManager
+import util.Util
 import websocket.WebsocketClient
 
 object Game {
 
     lateinit var gameInfo: GameInfo
+    var serverTimestampOffset: Long = 0L // add to server timestamps to get local
+
     val playersBySeat: MutableMap<Int, String> = HashMap()
     val players: Collection<String> get() = playersBySeat.values
 
@@ -30,6 +34,9 @@ object Game {
 
                 gameInfo = msg.gameInfo
                 AssetManager.ASSET_TOKEN = msg.assetToken
+                serverTimestampOffset = Util.currentTimeMillis() - msg.serverTimestamp
+                println("Timstamp offset: $serverTimestampOffset ms ahead")
+
                 SeatsView.init()
             }
 
@@ -53,6 +60,7 @@ object Game {
             }
 
             is ServerAddGameObjectMessage -> {
+                msg.gameObject.lastTouchedOnServer += serverTimestampOffset
                 Table.gameObjects.add(msg.gameObject)
                 console.log("Got game object: ")
                 console.log(msg.gameObject)
@@ -65,6 +73,15 @@ object Game {
 
             is ServerGameObjectPositionMessage -> {
                 Table.gameObjects.find { it.id == msg.id }?.let { Table.onServerGameObjectPosition(it, msg.pos) }
+            }
+
+            is ServerSetGameObjectsFlippedMessage -> {
+                msg.objsStatus.forEach { e ->
+                    Table.gameObjects.find { it.id == e.key }?.let {
+                        it.lastTouchedOnServer = Util.currentTimeMillis()
+                        it.flipped = e.value
+                    }
+                }
             }
 
             else -> {

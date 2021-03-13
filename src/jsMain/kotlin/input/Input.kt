@@ -1,6 +1,8 @@
 package input
 
 import CardSimulatorClient
+import ClientFlipObjectMessage
+import framework.input.GenericInput.KEY_F
 import framework.scene.SceneInput
 import game.Game
 import game.GameObject
@@ -10,6 +12,7 @@ import org.w3c.dom.events.MouseEvent
 import org.w3c.dom.events.WheelEvent
 import util.math.Vector
 import util.math.rectangleOf
+import websocket.WebsocketClient
 import kotlin.math.pow
 
 object Input : SceneInput() {
@@ -107,7 +110,11 @@ object Input : SceneInput() {
     }
 
     override fun onKeyDown(event: KeyboardEvent) {
-        super.onKeyDown(event)
+        if(event.keyCode == KEY_F) {
+            if(Table.selectedGameObjects.isNotEmpty()) {
+                WebsocketClient.send(ClientFlipObjectMessage(Table.selectedGameObjects.map { it.id }.toTypedArray()))
+            }
+        }
     }
 
     override fun onKeyUp(event: KeyboardEvent) {

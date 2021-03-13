@@ -11,7 +11,6 @@ import kotlin.math.pow
 open class GameObjectClientExtension(val gameObject: GameObject) {
 
     var serverPos = gameObject.pos
-    var lastMovedOnServer = 0L // used for deciding which element is on top
     var grabbed: Boolean = false
 
     open fun update(delta: Double) {

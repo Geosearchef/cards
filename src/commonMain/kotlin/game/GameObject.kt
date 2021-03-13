@@ -13,6 +13,7 @@ sealed class GameObject() {
     abstract val frontAsset: String?
     abstract val backAsset: String?
     var flipped: Boolean = false
+    var lastTouchedOnServer = 0L // used for deciding which element is on top
 
     val aspectRatio: Double get() = size.y / size.x
     val rect: Rectangle get() = Rectangle(pos, size.x, size.y)

@@ -1,4 +1,5 @@
 import game.GameObject
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -17,7 +18,7 @@ sealed class Message() {
 data class ClientLoginMessage(val username: String) : Message()
 
 @Serializable
-data class ServerLoginMessage(val gameInfo: GameInfo, val assetToken: String) : Message()
+data class ServerLoginMessage(val gameInfo: GameInfo, val assetToken: String, val serverTimestamp: Long) : Message()
 
 @Serializable
 data class ClientEchoReplyMessage(val serverTimestamp: Long) : Message()
@@ -33,18 +34,32 @@ data class ServerPlayerJoinSeatMessage(val playerName: String, val seatId: Int) 
 @Serializable
 data class ServerPlayerLeaveSeatMessage(val playerName: String, val seatId: Int) : Message()
 
-@Serializable
+@Serializable @SerialName("clCurPos")
 data class ClientCursorPositionMessage(val p: Vector) : Message()
-@Serializable
+@Serializable @SerialName("seCurPos")
 data class ServerCursorPositionMessage(val player: String, val pos: Vector) : Message()
 
-@Serializable
+@Serializable @SerialName("seAddObj")
 data class ServerAddGameObjectMessage(val gameObject: GameObject) : Message()
 
-@Serializable
+@Serializable @SerialName("seDelObj")
 data class ServerRemoveGameObjectMessage(val id: Long) : Message()
 
-@Serializable
+@Serializable @SerialName("clObjPos")
 data class ClientGameObjectPositionMessage(val pos: Vector, val id: Long) : Message()
-@Serializable
+@Serializable @SerialName("seObjPos")
 data class ServerGameObjectPositionMessage(val pos: Vector, val id: Long, val seat: Int) : Message()
+
+@Serializable @SerialName("clFlipObjs")
+data class ClientFlipObjectMessage(val objs: Array<Long>) : Message() {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+        return objs.contentEquals((other as ClientFlipObjectMessage).objs)
+    }
+
+    override fun hashCode() = objs.contentHashCode()
+}
+
+@Serializable @SerialName("seSetFlipObjs")
+data class ServerSetGameObjectsFlippedMessage(val objsStatus: Map<Long, Boolean>) : Message()

@@ -30,7 +30,7 @@ object Table {
 
     fun onServerGameObjectPosition(gameObject: GameObject, pos: Vector) {
         gameObject.clientExtension.serverPos = pos
-        gameObject.clientExtension.lastMovedOnServer = Util.currentTimeMillis()
+        gameObject.lastTouchedOnServer = Util.currentTimeMillis()
     }
 
     fun setSelection(rect: Rectangle) {

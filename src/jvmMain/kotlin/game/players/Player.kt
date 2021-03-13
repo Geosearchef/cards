@@ -48,6 +48,7 @@ class Player(val username: String, val session: Session) {
         // rate limit only, no retransmit
         if(!lastUpdateByGameObject.containsKey(gameObject.id) || Instant.now().isAfter(lastUpdateByGameObject[gameObject.id]!!.plus(MIN_OBJECT_UPDATE_INTERVAL))) {
             gameObject.pos = newPos
+            gameObject.lastTouchedOnServer = System.currentTimeMillis()
             PlayerManager.broadcast(ServerGameObjectPositionMessage(newPos, gameObject.id, seat!!))
             lastUpdateByGameObject[gameObject.id] = Instant.now()
         } else {

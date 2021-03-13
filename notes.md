@@ -5,7 +5,7 @@
 + pull + cache asset data
 
 + mouse cursor
-- Drag cards
++ Drag cards
 - Group cards
 - flip cards
 - shuffle cards
@@ -14,8 +14,7 @@
 
 
 - touch?
-
-render everything
+- order may be different when same timestamp --> sort by id
 
 enhancements:
 

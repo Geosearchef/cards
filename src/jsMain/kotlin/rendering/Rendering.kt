@@ -68,7 +68,7 @@ object Rendering : SceneRenderer {
         ctx.imageSmoothingEnabled = true
         ctx.imageSmoothingQuality = ImageSmoothingQuality.HIGH
 
-        Table.gameObjects.sortBy { it.clientExtension.lastMovedOnServer } // recently moved cards are at the top
+        Table.gameObjects.sortBy { it.lastTouchedOnServer } // recently moved cards are at the top
 
         Table.gameObjects.forEach {
             val asset = if(it.flipped) it.backAsset else it.frontAsset

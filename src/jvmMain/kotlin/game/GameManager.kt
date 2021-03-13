@@ -1,6 +1,7 @@
 package game
 
 import ClientCursorPositionMessage
+import ClientFlipObjectMessage
 import ClientGameObjectPositionMessage
 import ClientJoinSeatMessage
 import GameInfo
@@ -10,6 +11,7 @@ import ServerAddGameObjectMessage
 import ServerPlayerJoinSeatMessage
 import ServerPlayerLeaveSeatMessage
 import ServerRemoveGameObjectMessage
+import ServerSetGameObjectsFlippedMessage
 import game.TaskProcessor.verifyTaskThread
 import game.players.Player
 import game.players.PlayerManager.broadcast
@@ -44,6 +46,24 @@ object GameManager {
         }
     }
 
+    fun onMessageReceived(msg: Message, player: Player) {
+        TaskProcessor.addTask(player) {
+            when (msg) {
+                is ClientJoinSeatMessage -> {
+                    playerJoinSeat(player, msg.seatId)
+                }
+                is ClientCursorPositionMessage -> {
+                    player.updateCursorPosition(msg.p)
+                }
+                is ClientGameObjectPositionMessage -> {
+                    gameObjects.find { it.id == msg.id }?.let { player.onGameObjectMoved(it, msg.pos) }
+                }
+                is ClientFlipObjectMessage -> {
+                    gameObjects.filter { msg.objs.contains(it.id) }.forEach { flipGameObject(it, player) }
+                }
+            }
+        }
+    }
 
     fun addGameObject(gameObject: GameObject) {
         verifyTaskThread()
@@ -60,22 +80,10 @@ object GameManager {
         broadcast(ServerRemoveGameObjectMessage(gameObject.id))
     }
 
-
-
-    fun onMessageReceived(msg: Message, player: Player) {
-        TaskProcessor.addTask(player) {
-            when (msg) {
-                is ClientJoinSeatMessage -> {
-                    playerJoinSeat(player, msg.seatId)
-                }
-                is ClientCursorPositionMessage -> {
-                    player.updateCursorPosition(msg.p)
-                }
-                is ClientGameObjectPositionMessage -> {
-                    gameObjects.find { it.id == msg.id }?.let { player.onGameObjectMoved(it, msg.pos) }
-                }
-            }
-        }
+    fun flipGameObject(gameObject: GameObject, source: Player?) {
+        gameObject.lastTouchedOnServer = System.currentTimeMillis()
+        gameObject.flipped = !gameObject.flipped
+        broadcast(ServerSetGameObjectsFlippedMessage(mapOf(gameObject.id to gameObject.flipped)))
     }
 
     fun onPlayerInitialConnect(connectingPlayer: Player) {
