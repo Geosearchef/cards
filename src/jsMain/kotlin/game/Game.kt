@@ -13,6 +13,7 @@ import ServerPlayerJoinSeatMessage
 import ServerPlayerLeaveSeatMessage
 import ServerRemoveGameObjectMessage
 import ServerSetGameObjectsFlippedMessage
+import ServerStackInfoMessage
 import assets.AssetManager
 import util.Util
 import websocket.WebsocketClient
@@ -67,8 +68,15 @@ object Game {
             }
 
             is ServerRemoveGameObjectMessage -> {
+//                val gameObject = Table.gameObjects.find { it.id == msg.id }
+//                if(gameObject is Stack) {
+//                    gameObject.stackedObjects.forEach { it.stack = null } // TODO: does this cause inconsistency?
+//                }
+
                 Table.gameObjects.removeAll { it.id == msg.id }
                 Table.selectedGameObjects.removeAll { it.id == msg.id }
+
+                console.log("Removed game object $msg.id")
             }
 
             is ServerGameObjectPositionMessage -> {
@@ -82,6 +90,27 @@ object Game {
                         it.flipped = e.value
                     }
                 }
+            }
+
+            is ServerStackInfoMessage -> run {
+                val stack = Table.gameObjects.filterIsInstance<Stack>().find { it.id == msg.id }
+                if(stack == null) {
+                    console.error("Couldn't find a stack to update for id: ${msg.id}")
+                    return@run
+                }
+
+                console.log("Got stack ${msg.stackedObjects} update: ${msg.stackedObjects}")
+
+                val stackedObjects = Table.gameObjects
+                    .filterIsInstance<StackableGameObject>()
+                    .filter { msg.stackedObjects.contains(it.id) }
+
+                if(stackedObjects.size != msg.stackedObjects.size) {
+                    console.error("Couldn't find all stackables in stack, found: ${stackedObjects.map { it.id }}, wanted: ${msg.stackedObjects}")
+                    return@run
+                }
+
+                Table.onServerStackInfo(stack, stackedObjects)
             }
 
             else -> {

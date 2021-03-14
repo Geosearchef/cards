@@ -9,10 +9,9 @@ import game.Game
 import game.Stack
 import game.Table
 import input.Input
-import org.w3c.dom.CanvasRenderingContext2D
-import org.w3c.dom.HIGH
-import org.w3c.dom.ImageSmoothingQuality
+import org.w3c.dom.*
 import util.math.Rectangle
+import util.math.Vector
 
 object Rendering : SceneRenderer {
 
@@ -22,6 +21,8 @@ object Rendering : SceneRenderer {
     private const val CARD_OUTLINE_RADIUS = 4.0
     private const val AREA_SELECTION_COLOR = "#4fb3ff"
     private const val CARD_OUTLINE_COLOR_SELECTED = "#4fb3ff"
+    private const val STACK_COUNT_OUTLINE_RADIUS = 4.0
+    private val STACK_COUNT_SIZE = Vector(20.0, 20.0)
 
     override fun render(ctx: CanvasRenderingContext2D) {
         renderTable(ctx)
@@ -80,6 +81,25 @@ object Rendering : SceneRenderer {
                 is Stack -> {
                     renderCard(ctx, gameObject.rect, gameObject.usedAsset, Table.selectedGameObjects.contains(gameObject))
                     // render count
+                    ctx.color("#FFFFFF")
+                    ctx.globalAlpha = 0.9
+                    ctx.roundRect(Rectangle(gameObject.center - STACK_COUNT_SIZE / 2.0, STACK_COUNT_SIZE.x, STACK_COUNT_SIZE.y), STACK_COUNT_OUTLINE_RADIUS)
+                    ctx.fill()
+                    ctx.globalAlpha = 1.0
+
+                    ctx.color("#000000")
+                    ctx.lineWidth = 0.5
+                    ctx.roundRect(Rectangle(gameObject.center - STACK_COUNT_SIZE / 2.0, STACK_COUNT_SIZE.x, STACK_COUNT_SIZE.y), STACK_COUNT_OUTLINE_RADIUS)
+                    ctx.lineWidth = 1.0
+                    ctx.stroke()
+
+                    ctx.color("#000000")
+                    ctx.font = "14px sans-serif"
+                    ctx.textAlign = CanvasTextAlign.CENTER
+                    ctx.textBaseline = CanvasTextBaseline.MIDDLE;
+                    ctx.fillText(gameObject.stackedObjects.size.toString(), gameObject.center.x, gameObject.center.y + 0.25)
+                    ctx.textAlign = CanvasTextAlign.LEFT
+                    ctx.textBaseline = CanvasTextBaseline.BOTTOM;
                 }
 
                 else -> console.log("Couldn't render GameObject of unknown type")

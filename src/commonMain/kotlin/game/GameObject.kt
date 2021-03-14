@@ -1,5 +1,6 @@
 package game
 
+import kotlinx.serialization.Serializable
 import util.math.Rectangle
 import util.math.Vector
 
@@ -47,6 +48,7 @@ class Card(override var pos: Vector, override val size: Vector, override val fro
 @Serializable
 class Stack(override var pos: Vector, override val size: Vector, override val frontAsset: String?, override val backAsset: String?) : GameObject()  {
 
+    @kotlinx.serialization.Transient
     var stackedObjects: MutableList<StackableGameObject> = ArrayList() // last element is on top
 
     override val usedAsset: String? get() = stackedObjects.lastOrNull()?.usedAsset

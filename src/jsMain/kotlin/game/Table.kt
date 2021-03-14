@@ -3,10 +3,12 @@ package game
 import CardSimulatorClient
 import ClientCursorPositionMessage
 import ClientGameObjectPositionMessage
+import kotlinx.browser.window
 import util.Util
 import util.math.Rectangle
 import util.math.Vector
 import websocket.WebsocketClient
+import kotlin.math.pow
 
 object Table {
 
@@ -23,6 +25,18 @@ object Table {
     fun onServerGameObjectPosition(gameObject: GameObject, pos: Vector) {
         gameObject.clientExtension.serverPos = pos
         gameObject.lastTouchedOnServer = Util.currentTimeMillis()
+    }
+
+    fun onServerStackInfo(stack: Stack, gameObjects: List<StackableGameObject>) {
+        stack.lastTouchedOnServer = Util.currentTimeMillis()
+        stack.stackedObjects.forEach { it.stack = null } // remove stack reference -> activate rendering of all objects that might have been removed
+        stack.stackedObjects.clear()
+
+        gameObjects.forEach {
+            it.stack = stack
+            it.pos = stack.pos
+            stack.stackedObjects.add(it)
+        }
     }
 
 

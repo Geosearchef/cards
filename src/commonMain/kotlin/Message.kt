@@ -1,5 +1,6 @@
 import game.GameObject
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -65,3 +66,6 @@ data class ServerSetGameObjectsFlippedMessage(val objsStatus: Map<Long, Boolean>
 
 @Serializable @SerialName("clDropObj")
 data class ClientGameObjectReleasedMessage(val pos: Vector, val id: Long) : Message() // position not used for setting, just for stack checking
+
+@Serializable @SerialName("seStackInfo")
+data class ServerStackInfoMessage(val id: Long, val stackedObjects: List<Long>) : Message()

@@ -14,6 +14,7 @@ import org.w3c.dom.events.WheelEvent
 import util.math.Vector
 import util.math.rectangleOf
 import websocket.WebsocketClient
+import kotlin.math.pow
 
 object Input : SceneInput() {
 

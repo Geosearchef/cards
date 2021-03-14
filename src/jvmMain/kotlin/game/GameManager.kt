@@ -13,6 +13,7 @@ import ServerPlayerJoinSeatMessage
 import ServerPlayerLeaveSeatMessage
 import ServerRemoveGameObjectMessage
 import ServerSetGameObjectsFlippedMessage
+import ServerStackInfoMessage
 import game.TaskProcessor.verifyTaskThread
 import game.players.Player
 import game.players.PlayerManager.broadcast
@@ -23,7 +24,7 @@ import util.math.Vector
 
 object GameManager {
 
-    const val MAX_STACK_DISTANCE = 20.0
+    const val MAX_STACK_DISTANCE_SQUARED = 10.0 * 10.0
 
     val log = logger()
 
@@ -81,6 +82,7 @@ object GameManager {
     fun addGameObject(gameObject: GameObject) {
         verifyTaskThread()
         gameObject.id = IdFactory.nextGameObjectId++
+        gameObject.lastTouchedOnServer = System.currentTimeMillis()
         gameObjects.add(gameObject)
 
         broadcast(ServerAddGameObjectMessage(gameObject))
@@ -94,22 +96,104 @@ object GameManager {
     }
 
     fun flipGameObject(gameObject: GameObject, source: Player?) {
+        verifyTaskThread()
         gameObject.lastTouchedOnServer = System.currentTimeMillis()
-        gameObject.flipped = !gameObject.flipped
-        broadcast(ServerSetGameObjectsFlippedMessage(mapOf(gameObject.id to gameObject.flipped)))
+
+        if(gameObject is Stack) {
+            gameObject.stackedObjects.forEach { flipGameObject(it, source) }
+            gameObject.stackedObjects.reverse()
+            broadcastStack(gameObject)
+        } else {
+            gameObject.flipped = !gameObject.flipped
+            broadcast(ServerSetGameObjectsFlippedMessage(mapOf(gameObject.id to gameObject.flipped)))
+        }
     }
 
-    fun attemptStack(gameObject: GameObject, pos: Vector) {
-        if(gameObject !is StackableGameObject) {
+    fun attemptStack(gameObject: GameObject, pos: Vector, bottom: Boolean = false) {
+        verifyTaskThread()
+
+//        if(gameObject is Stack) {
+//            gameObjects.filterIsInstance<StackableGameObject>()
+//                .filter { it.stack == null }
+//                .filter { (it.pos - gameObject.pos).lengthSquared() < MAX_STACK_DISTANCE_SQUARED }
+//                .forEach { attemptStack(it, it.pos, bottom = true) }
+//            return
+//        }
+
+        if(gameObject !is StackableGameObject && gameObject !is Stack) {
             return
         }
 
-        var stack: Stack? = gameObjects
-                .filterIsInstance<Stack>()
-                .find { (it.pos - gameObject.pos).lengthSquared() < MAX_STACK_DISTANCE.pow(2.0) }
+        var baseStack: Stack? = gameObjects
+            .filterIsInstance<Stack>()
+            .filter { it != gameObject }
+            .find { (it.pos - gameObject.pos).lengthSquared() < MAX_STACK_DISTANCE_SQUARED }
 
-        
+        if(baseStack == null) {
+            var other = gameObjects
+                .filterIsInstance<StackableGameObject>()
+                .filter { it.stack == null }
+                .filter { it != gameObject }
+                .find { (it.pos - gameObject.pos).lengthSquared() < MAX_STACK_DISTANCE_SQUARED }
+
+            other?.let {
+                val newStack = Stack(other.pos.clone(), other.size.clone(), null, null)
+                addGameObject(newStack)
+                addToStack(it, newStack)
+
+                baseStack = newStack
+            }
+        }
+
+        baseStack?.let { baseStack ->
+            if(gameObject is StackableGameObject) {
+                addToStack(gameObject, baseStack, bottom)
+            } else if(gameObject is Stack) {
+                for (it in ArrayList(gameObject.stackedObjects)) {
+                    val flipStatus = it.flipped
+                    broadcast(ServerSetGameObjectsFlippedMessage(mapOf(it.id to true))) // TODO: this is a bad workaround
+                    removeFromStack(it)
+                    addToStack(it, baseStack)
+                    broadcast(ServerSetGameObjectsFlippedMessage(mapOf(it.id to flipStatus)))
+                }
+            }
+        }
     }
+
+    private fun addToStack(stackable: StackableGameObject, stack: Stack, bottom: Boolean = false) {
+        verifyTaskThread()
+
+        if(bottom) {
+            stack.stackedObjects.add(0, stackable)
+        } else {
+            stack.stackedObjects.add(stackable)
+        }
+
+        stackable.stack = stack
+        stackable.pos = stack.pos.clone()
+
+        broadcastStack(stack)
+    }
+
+    private fun removeFromStack(stackable: StackableGameObject) {
+        verifyTaskThread()
+
+        stackable.stack?.let { stack ->
+            stack.stackedObjects.remove(stackable)
+
+            broadcastStack(stack)
+
+            if(stack.stackedObjects.isEmpty()) {
+                removeGameObject(stack)
+            }
+        }
+        stackable.stack = null
+    }
+
+    private fun broadcastStack(stack: Stack) {
+        broadcast(ServerStackInfoMessage(stack.id, stack.stackedObjects.map { it.id }))
+    }
+
 
     fun onPlayerInitialConnect(connectingPlayer: Player) {
         verifyTaskThread()
@@ -124,6 +208,9 @@ object GameManager {
         // send game objects
         gameObjects.forEach {
             connectingPlayer.send(ServerAddGameObjectMessage(it))
+            if(it is Stack) {
+                connectingPlayer.send(ServerStackInfoMessage(it.id, it.stackedObjects.map { it.id }))
+            }
         }
     }
 
