@@ -2,6 +2,7 @@ package input
 
 import CardSimulatorClient
 import ClientFlipObjectMessage
+import ClientGameObjectReleasedMessage
 import framework.input.GenericInput.KEY_F
 import framework.scene.SceneInput
 import game.Game
@@ -13,7 +14,6 @@ import org.w3c.dom.events.WheelEvent
 import util.math.Vector
 import util.math.rectangleOf
 import websocket.WebsocketClient
-import kotlin.math.pow
 
 object Input : SceneInput() {
 
@@ -63,7 +63,7 @@ object Input : SceneInput() {
             if(event.shiftKey) {
                 selectionAreaStart = mousePositionTable
             } else {
-                val pressedGameObject = Table.gameObjects.findLast { mousePositionTable in it.rect } // sorted by last moved --> search last one
+                val pressedGameObject = Table.renderedGameObjects.findLast { mousePositionTable in it.rect } // sorted by last moved --> search last one
                 if(pressedGameObject != null) {
                     if(!Table.selectedGameObjects.contains(pressedGameObject)) {
                         Table.selectedGameObjects.clear()
@@ -88,6 +88,8 @@ object Input : SceneInput() {
     override fun onMouseUp(event: MouseEvent, isOnUI: Boolean) {
 
         if(event.button.toInt() == 0) {
+            grabbedGameObject?.let { WebsocketClient.send(ClientGameObjectReleasedMessage(it.pos, it.id)) }
+
             selectionAreaStart = null
             grabbedGameObject = null
             isTableMoving = false

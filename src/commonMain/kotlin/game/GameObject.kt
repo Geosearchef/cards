@@ -1,6 +1,5 @@
 package game
 
-import kotlinx.serialization.Serializable
 import util.math.Rectangle
 import util.math.Vector
 
@@ -23,13 +22,19 @@ sealed class GameObject() {
         return (id % Int.MAX_VALUE).toInt()
     }
 
-    @kotlinx.serialization.Transient
+    open val rendered: Boolean get() = true
+    open val usedAsset: String? get() = if(flipped) backAsset else frontAsset
+
+//    @kotlinx.serialization.Transient (is already abstract)
     abstract val clientExtension: GameObjectClientExtension
 }
 
 @Serializable
 sealed class StackableGameObject() : GameObject()  {
 
+    var stack: Stack? = null // TODO: remove from selected game objects on stack
+
+    override val rendered get() = stack == null
 }
 
 @Serializable
@@ -41,6 +46,10 @@ class Card(override var pos: Vector, override val size: Vector, override val fro
 
 @Serializable
 class Stack(override var pos: Vector, override val size: Vector, override val frontAsset: String?, override val backAsset: String?) : GameObject()  {
+
+    var stackedObjects: MutableList<StackableGameObject> = ArrayList() // last element is on top
+
+    override val usedAsset: String? get() = stackedObjects.lastOrNull()?.usedAsset
 
     @kotlinx.serialization.Transient
     override val clientExtension: GameObjectClientExtension = StackClientExtension(this)

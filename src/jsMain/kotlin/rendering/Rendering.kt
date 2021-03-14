@@ -6,6 +6,7 @@ import framework.rendering.*
 import framework.scene.Scene.SceneRenderer
 import game.Card
 import game.Game
+import game.Stack
 import game.Table
 import input.Input
 import org.w3c.dom.CanvasRenderingContext2D
@@ -70,36 +71,41 @@ object Rendering : SceneRenderer {
 
         Table.gameObjects.sortBy { it.lastTouchedOnServer } // recently moved cards are at the top
 
-        Table.gameObjects.forEach {
-            val asset = if(it.flipped) it.backAsset else it.frontAsset
-            when(it) {
+        Table.renderedGameObjects.forEach { gameObject ->
+            when(gameObject) {
                 is Card -> {
-                    if(asset != null) {
-                        // white background
-                        ctx.color("#FFFFFF")
-                        ctx.roundRect(it.rect, CARD_OUTLINE_RADIUS)
-                        ctx.fill()
+                    renderCard(ctx, gameObject.rect, gameObject.usedAsset, Table.selectedGameObjects.contains(gameObject))
+                }
 
-                        AssetManager.get(asset)?.wrappedImage?.let { image ->
-                            ctx.drawImage(image, it.pos.x, it.pos.y, it.size.x, it.size.y)
-                        }
-
-                        ctx.color(if(Table.selectedGameObjects.contains(it)) CARD_OUTLINE_COLOR_SELECTED else CARD_OUTLINE_COLOR)
-                        ctx.lineWidth = CARD_OUTLINE_WIDTH
-//                        ctx.beginPath()
-//                        ctx.rect(it.pos.x, it.pos.y, it.size.x, it.size.y)
-                        ctx.roundRect(it.rect, CARD_OUTLINE_RADIUS)
-                        ctx.stroke()
-                        ctx.lineWidth = 1.0
-                    } else {
-                        ctx.color("#333333")
-                        ctx.fillRect(Rectangle(it.pos, it.size.x, it.size.y))
-                    }
-
+                is Stack -> {
+                    renderCard(ctx, gameObject.rect, gameObject.usedAsset, Table.selectedGameObjects.contains(gameObject))
+                    // render count
                 }
 
                 else -> console.log("Couldn't render GameObject of unknown type")
             }
+        }
+    }
+
+    private fun renderCard(ctx: CanvasRenderingContext2D, rect: Rectangle, asset: String?, selected: Boolean) {
+        if (asset != null) {
+            // white background
+            ctx.color("#FFFFFF")
+            ctx.roundRect(rect, CARD_OUTLINE_RADIUS)
+            ctx.fill()
+
+            AssetManager.get(asset)?.wrappedImage?.let { image ->
+                ctx.drawImage(image, rect.pos.x, rect.pos.y, rect.width, rect.height)
+            }
+
+            ctx.color(if (selected) CARD_OUTLINE_COLOR_SELECTED else CARD_OUTLINE_COLOR)
+            ctx.lineWidth = CARD_OUTLINE_WIDTH
+            ctx.roundRect(rect, CARD_OUTLINE_RADIUS)
+            ctx.stroke()
+            ctx.lineWidth = 1.0
+        } else {
+            ctx.color("#333333")
+            ctx.fillRect(rect)
         }
     }
 

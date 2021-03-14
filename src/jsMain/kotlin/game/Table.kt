@@ -3,12 +3,10 @@ package game
 import CardSimulatorClient
 import ClientCursorPositionMessage
 import ClientGameObjectPositionMessage
-import kotlinx.browser.window
 import util.Util
 import util.math.Rectangle
 import util.math.Vector
 import websocket.WebsocketClient
-import kotlin.math.pow
 
 object Table {
 
@@ -18,19 +16,19 @@ object Table {
     var scale = 2.0
 
     val gameObjects: MutableList<GameObject> = ArrayList()
+    val renderedGameObjects get() = gameObjects.filter(GameObject::rendered)
 
     val selectedGameObjects: MutableList<GameObject> = ArrayList()
-
-
-    fun update(delta: Double) {
-        gameObjects.forEach { it.clientExtension.update(delta) }
-    }
-
-
 
     fun onServerGameObjectPosition(gameObject: GameObject, pos: Vector) {
         gameObject.clientExtension.serverPos = pos
         gameObject.lastTouchedOnServer = Util.currentTimeMillis()
+    }
+
+
+
+    fun update(delta: Double) {
+        gameObjects.forEach { it.clientExtension.update(delta) }
     }
 
     fun setSelection(rect: Rectangle) {
@@ -38,8 +36,6 @@ object Table {
 
         gameObjects.filter { it.center in rect }.forEach(selectedGameObjects::add)
     }
-
-
 
     // client sided
     var lastUpdateByGameObject: MutableMap<Long, Long> = HashMap()

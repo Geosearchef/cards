@@ -3,6 +3,7 @@ package game
 import ClientCursorPositionMessage
 import ClientFlipObjectMessage
 import ClientGameObjectPositionMessage
+import ClientGameObjectReleasedMessage
 import ClientJoinSeatMessage
 import GameInfo
 import Message
@@ -21,6 +22,8 @@ import util.Util.logger
 import util.math.Vector
 
 object GameManager {
+
+    const val MAX_STACK_DISTANCE = 20.0
 
     val log = logger()
 
@@ -68,6 +71,9 @@ object GameManager {
                 is ClientFlipObjectMessage -> {
                     gameObjects.filter { msg.objs.contains(it.id) }.forEach { flipGameObject(it, player) }
                 }
+                is ClientGameObjectReleasedMessage -> {
+                    gameObjects.find { it.id == msg.id }?.let { attemptStack(it, msg.pos) }
+                }
             }
         }
     }
@@ -91,6 +97,18 @@ object GameManager {
         gameObject.lastTouchedOnServer = System.currentTimeMillis()
         gameObject.flipped = !gameObject.flipped
         broadcast(ServerSetGameObjectsFlippedMessage(mapOf(gameObject.id to gameObject.flipped)))
+    }
+
+    fun attemptStack(gameObject: GameObject, pos: Vector) {
+        if(gameObject !is StackableGameObject) {
+            return
+        }
+
+        var stack: Stack? = gameObjects
+                .filterIsInstance<Stack>()
+                .find { (it.pos - gameObject.pos).lengthSquared() < MAX_STACK_DISTANCE.pow(2.0) }
+
+        
     }
 
     fun onPlayerInitialConnect(connectingPlayer: Player) {
