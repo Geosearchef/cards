@@ -20,6 +20,7 @@ object WebsocketClient {
     var receivedMessages = 0
     var transmittedBytes = 0
     var receivedBytes = 0
+    var lastRTT: Double = 0.0
 
     fun send(message: Message) {
         val json = message.toJson()
@@ -37,6 +38,13 @@ object WebsocketClient {
 
         if(message is ServerEchoRequestMessage) {
             send(ClientEchoReplyMessage(message.serverTimestamp))
+            if(lastRTT == 0.0) {
+                if(message.lastRTT < 10000) {
+                    lastRTT = message.lastRTT.toDouble()
+                }
+            } else {
+                lastRTT = message.lastRTT.toDouble() * 0.2 + lastRTT * 0.8
+            }
             return
         }
 

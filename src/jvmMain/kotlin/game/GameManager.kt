@@ -52,6 +52,13 @@ object GameManager {
                 is ClientJoinSeatMessage -> {
                     playerJoinSeat(player, msg.seatId)
                 }
+            }
+
+            if(player.seat == null) {
+                return@addTask
+            }
+
+            when(msg) {
                 is ClientCursorPositionMessage -> {
                     player.updateCursorPosition(msg.p)
                 }

@@ -7,7 +7,7 @@
 + mouse cursor
 + Drag cards
 - Group cards
-- flip cards
++ flip cards
 - shuffle cards
 - Hand per player
 - shared text field for all game.players, editable only by host
@@ -18,4 +18,12 @@
 
 enhancements:
 
-options, sliders for card corner radius, line width
+options, sliders for card corner radius, line width, mipmapping for ff
+
+
+
+stack:
+- stackable references stack, is still contained in gameObjects
+- is rendered -> is in stack (important for input)
+- stack has list of elements, server sends the entire stack each time
+- flip -> flip individual elements, inverse order 

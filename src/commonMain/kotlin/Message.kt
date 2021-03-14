@@ -24,7 +24,7 @@ data class ServerLoginMessage(val gameInfo: GameInfo, val assetToken: String, va
 data class ClientEchoReplyMessage(val serverTimestamp: Long) : Message()
 
 @Serializable
-data class ServerEchoRequestMessage(val serverTimestamp: Long) : Message()
+data class ServerEchoRequestMessage(val serverTimestamp: Long, val lastRTT: Int) : Message()
 
 @Serializable
 data class ClientJoinSeatMessage(val seatId: Int) : Message()

@@ -40,9 +40,10 @@ object GenericRendering {
         ctx.textAlign = CanvasTextAlign.RIGHT
         averageFrameTime = if(averageFrameTime == -1.0) delta else averageFrameTime * 0.95 + delta * 0.05;
         ctx.fillText(
-                "In: ${WebsocketClient.receivedMessages} packets (${(WebsocketClient.receivedBytes / 1000.0).toDecimals(1)} KB)    " +
+                "Latency: ${WebsocketClient.lastRTT.toInt()} ms    " +
+                        "In: ${WebsocketClient.receivedMessages} packets (${(WebsocketClient.receivedBytes / 1000.0).toDecimals(1)} KB)    " +
                         "Out: ${WebsocketClient.transmittedMessages} packets (${(WebsocketClient.transmittedBytes / 1000.0).toDecimals(1)} KB)    " +
-                        "Frame Time: ${averageFrameTime.toDecimals(3)} s  (${ (1.0 / averageFrameTime).toDecimals(1) } fps)",
+                        "Frame Time: ${averageFrameTime.toDecimals(3)} s  (${(1.0 / averageFrameTime).toDecimals(1)} fps)",
                 width - 3.0,
                 height - 3.0
         )

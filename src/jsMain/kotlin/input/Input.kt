@@ -101,7 +101,10 @@ object Input : SceneInput() {
             return
         }
 
-        Table.scale /= ZOOM_FACTOR.pow(event.deltaY)
+        var amount = event.deltaY
+        if(event.deltaMode == 0) amount /= 33  // 0: pixel, 1: lines, 2: pages
+
+        Table.scale /= ZOOM_FACTOR.pow(amount)
 
         Table.scale = minOf(MAX_ZOOM, maxOf(MIN_ZOOM, Table.scale))
 

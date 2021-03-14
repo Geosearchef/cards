@@ -107,7 +107,7 @@ object WebsocketServer {
         fun run() {
             synchronized(sessions) {
                 try {
-                    ArrayList(sessions).forEach { send(it, ServerEchoRequestMessage(System.currentTimeMillis())) }
+                    ArrayList(sessions).forEach { send(it, ServerEchoRequestMessage(System.currentTimeMillis(), PlayerManager.getPlayerBySession(it)?.latency ?: 0)) }
 
                     // time out sessions
                     ArrayList(sessions).filter {
