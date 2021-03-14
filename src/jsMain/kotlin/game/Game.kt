@@ -99,11 +99,13 @@ object Game {
                     return@run
                 }
 
-                console.log("Got stack ${msg.stackedObjects} update: ${msg.stackedObjects}")
+                console.log("Got stack ${msg.id} update: ${msg.stackedObjects}")
 
-                val stackedObjects = Table.gameObjects
-                    .filterIsInstance<StackableGameObject>()
-                    .filter { msg.stackedObjects.contains(it.id) }
+//                val stackedObjects = Table.gameObjects
+//                    .filterIsInstance<StackableGameObject>()
+//                    .filter { msg.stackedObjects.contains(it.id) }
+
+                val stackedObjects = msg.stackedObjects.map { id -> Table.gameObjects.find { it.id == id } }.filterNotNull().filterIsInstance<StackableGameObject>()
 
                 if(stackedObjects.size != msg.stackedObjects.size) {
                     console.error("Couldn't find all stackables in stack, found: ${stackedObjects.map { it.id }}, wanted: ${msg.stackedObjects}")

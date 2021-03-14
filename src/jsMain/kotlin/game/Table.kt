@@ -27,12 +27,12 @@ object Table {
         gameObject.lastTouchedOnServer = Util.currentTimeMillis()
     }
 
-    fun onServerStackInfo(stack: Stack, gameObjects: List<StackableGameObject>) {
+    fun onServerStackInfo(stack: Stack, stackedObjects: List<StackableGameObject>) {
         stack.lastTouchedOnServer = Util.currentTimeMillis()
         stack.stackedObjects.forEach { it.stack = null } // remove stack reference -> activate rendering of all objects that might have been removed
         stack.stackedObjects.clear()
 
-        gameObjects.forEach {
+        stackedObjects.forEach {
             it.stack = stack
             it.pos = stack.pos
             stack.stackedObjects.add(it)
