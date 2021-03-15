@@ -7,9 +7,9 @@ import ClientUnstackGameObjectMessage
 import framework.input.GenericInput.KEY_F
 import framework.scene.SceneInput
 import game.Game
-import game.GameObject
-import game.Stack
 import game.Table
+import game.objects.GameObject
+import game.objects.Stack
 import kotlinx.browser.window
 import org.w3c.dom.TouchEvent
 import org.w3c.dom.events.KeyboardEvent

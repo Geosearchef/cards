@@ -1,4 +1,4 @@
-package game
+package game.objects
 
 import kotlinx.serialization.Serializable
 import util.math.Rectangle
@@ -24,7 +24,7 @@ sealed class GameObject() {
     }
 
     open val rendered: Boolean get() = true
-    open val usedAsset: String? get() = if(flipped) backAsset else frontAsset
+    open fun getUsedAsset(inOtherPlayerZone: Boolean = false): String? = if (flipped || inOtherPlayerZone) backAsset else frontAsset
 
 //    @kotlinx.serialization.Transient (is already abstract)
     abstract val clientExtension: GameObjectClientExtension
@@ -52,7 +52,7 @@ class Stack(override var pos: Vector, override val size: Vector, override val fr
     var stackedObjects: MutableList<StackableGameObject> = ArrayList() // last element is on top
     val topObject get() = stackedObjects.lastOrNull()
 
-    override val usedAsset: String? get() = stackedObjects.lastOrNull()?.usedAsset
+    override fun getUsedAsset(inOtherPlayerZone: Boolean): String? = stackedObjects.lastOrNull()?.getUsedAsset(inOtherPlayerZone)
 
     @kotlinx.serialization.Transient
     override val clientExtension: GameObjectClientExtension = StackClientExtension(this)

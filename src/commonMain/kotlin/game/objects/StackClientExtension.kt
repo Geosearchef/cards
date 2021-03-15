@@ -1,4 +1,4 @@
-package game
+package game.objects
 
 open class StackClientExtension(gameObject: GameObject) : GameObjectClientExtension(gameObject) {
 

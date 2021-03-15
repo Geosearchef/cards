@@ -19,3 +19,4 @@
 enhancements:
 
 options, sliders for card corner radius, line width, mipmapping for ff
+fullscreen button

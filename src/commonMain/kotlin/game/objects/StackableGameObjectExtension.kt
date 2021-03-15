@@ -1,4 +1,4 @@
-package game
+package game.objects
 
 open class StackableGameObjectExtension(gameObject: GameObject) : GameObjectClientExtension(gameObject) {
 

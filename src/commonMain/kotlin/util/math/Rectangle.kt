@@ -1,5 +1,8 @@
 package util.math
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 class Rectangle(var x: Double, var y: Double, var width: Double, var height: Double) {
 
     var pos: Vector

@@ -15,11 +15,14 @@ import ServerRemoveGameObjectMessage
 import ServerSetGameObjectsFlippedMessage
 import ServerStackInfoMessage
 import assets.AssetManager
+import game.objects.Stack
+import game.objects.StackableGameObject
 import util.Util
 import websocket.WebsocketClient
 
 object Game {
 
+    var loggedIn = false
     lateinit var gameInfo: GameInfo
     var serverTimestampOffset: Long = 0L // add to server timestamps to get local
 
@@ -39,6 +42,7 @@ object Game {
                 println("Timstamp offset: $serverTimestampOffset ms ahead")
 
                 SeatsView.init()
+                loggedIn = true
             }
 
             is ServerPlayerJoinSeatMessage -> {

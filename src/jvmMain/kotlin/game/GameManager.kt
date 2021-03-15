@@ -8,24 +8,33 @@ import ClientJoinSeatMessage
 import ClientUnstackGameObjectMessage
 import GameInfo
 import Message
+import PlayerZone
 import SeatInfo
 import ServerAddGameObjectMessage
+import ServerGameObjectPositionMessage
 import ServerPlayerJoinSeatMessage
 import ServerPlayerLeaveSeatMessage
 import ServerRemoveGameObjectMessage
 import ServerSetGameObjectsFlippedMessage
 import ServerStackInfoMessage
 import game.TaskProcessor.verifyTaskThread
+import game.objects.Card
+import game.objects.GameObject
+import game.objects.Stack
+import game.objects.StackableGameObject
 import game.players.Player
 import game.players.PlayerManager.broadcast
 import game.players.PlayerManager.players
 import util.IdFactory
 import util.Util.logger
+import util.math.Rectangle
 import util.math.Vector
 
 object GameManager {
 
     const val MAX_STACK_DISTANCE_SQUARED = 10.0 * 10.0
+    const val PLAYER_ZONE_PADDING = 50.0
+    const val PLAYER_ZONE_CARD_PADDING = 6.0
 
     val log = logger()
 
@@ -36,6 +45,13 @@ object GameManager {
             SeatInfo(2, "#F0C659"),
             SeatInfo(3, "#AB4FF7"),
             SeatInfo(4, "#74F74F"),
+        ),
+        arrayOf(
+            PlayerZone(0, Rectangle(-700.0, 250.0, 400.0, 160.0)),
+            PlayerZone(1, Rectangle(-200.0, 250.0, 400.0, 160.0)),
+            PlayerZone(2, Rectangle(300.0, 250.0, 400.0, 160.0)),
+            PlayerZone(3, Rectangle(-700.0, -350.0, 400.0, 160.0)),
+            PlayerZone(4, Rectangle(-200.0, -350.0, 400.0, 160.0)),
         )
     )
     val gameObjects: MutableList<GameObject> = ArrayList()
@@ -46,7 +62,7 @@ object GameManager {
             val cardSize = Vector(57.0, 57.0 * (1060.0 / 680.0))  // 57.0 x 88.8
 
             for(i in 1..13) {
-                addGameObject(Card(Vector(i * (cardSize.x + 15.0), 0.0), cardSize, "CardA$i.png", "CardAB.png"))
+                addGameObject(Card(Vector(i * (cardSize.x + 15.0) - 500, 0.0), cardSize, "CardA$i.png", "CardAB.png"))
             }
         }
     }
@@ -74,7 +90,7 @@ object GameManager {
                     gameObjects.filter { msg.objs.contains(it.id) }.forEach { flipGameObject(it, player) }
                 }
                 is ClientGameObjectReleasedMessage -> {
-                    gameObjects.find { it.id == msg.id }?.let { attemptStack(it, msg.pos) }
+                    gameObjects.find { it.id == msg.id }?.let { attemptStack(it/*, msg.pos*/) }
                 }
                 is ClientUnstackGameObjectMessage -> {
                     gameObjects.filterIsInstance<StackableGameObject>().find { it.id == msg.id}?.let {
@@ -105,6 +121,45 @@ object GameManager {
         broadcast(ServerRemoveGameObjectMessage(gameObject.id))
     }
 
+    fun setGameObjectPos(gameObject: GameObject, newPos: Vector) {
+        val oldPos = gameObject.pos.clone()
+        gameObject.pos = newPos
+        gameObject.lastTouchedOnServer = System.currentTimeMillis()
+
+        gameInfo.playerZones.find { gameObject in it || oldPos in it }?.let { alignGameObjectsIntoPlayerZone(it) }
+    }
+
+    fun alignGameObjectsIntoPlayerZone(zone: PlayerZone) {
+        val gameObjectsInZone = gameObjects.filter { (it as? StackableGameObject)?.stack == null }.filter { it in zone }.sortedBy { it.pos.x }
+        if(gameObjectsInZone.isEmpty()) {
+            return
+        }
+
+        val availableWidth = zone.rect.width - (PLAYER_ZONE_PADDING * 2.0)
+        val neededWidth = gameObjectsInZone.sumByDouble { it.rect.width }
+        val percentageGranted = availableWidth / neededWidth
+
+        val overshootOfLastObject = gameObjectsInZone.last().rect.width * (1.0 - percentageGranted)
+        var overshootCorrectionPerObject = overshootOfLastObject / gameObjectsInZone.size
+
+        var offset = 0.0
+        if(percentageGranted > 1.0) {
+            overshootCorrectionPerObject = 0.0
+            offset = (availableWidth - (neededWidth + PLAYER_ZONE_CARD_PADDING * gameObjectsInZone.size)) / 2.0
+        }
+
+        var currentX = zone.rect.x + PLAYER_ZONE_PADDING - overshootCorrectionPerObject + offset + (if(percentageGranted > 1.0) PLAYER_ZONE_CARD_PADDING / 2.0 else 0.0)
+        gameObjectsInZone.forEach {
+            it.pos = Vector(currentX, zone.rect.center.y - (it.rect.height / 2.0))
+            if(percentageGranted < 1.0) {
+                currentX += it.rect.width * percentageGranted - overshootCorrectionPerObject
+            } else {
+                currentX += it.rect.width + PLAYER_ZONE_CARD_PADDING
+            }
+            broadcast(ServerGameObjectPositionMessage(it.pos, it.id, zone.seatId))
+        }
+    }
+
     fun flipGameObject(gameObject: GameObject, source: Player?) {
         verifyTaskThread()
         gameObject.lastTouchedOnServer = System.currentTimeMillis()
@@ -119,7 +174,7 @@ object GameManager {
         }
     }
 
-    fun attemptStack(gameObject: GameObject, pos: Vector, bottom: Boolean = false) {
+    fun attemptStack(gameObject: GameObject, /*pos: Vector, */bottom: Boolean = false) {
         verifyTaskThread()
 
 //        if(gameObject is Stack) {

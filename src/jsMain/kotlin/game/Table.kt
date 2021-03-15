@@ -3,6 +3,9 @@ package game
 import CardSimulatorClient
 import ClientCursorPositionMessage
 import ClientGameObjectPositionMessage
+import game.objects.GameObject
+import game.objects.Stack
+import game.objects.StackableGameObject
 import input.Input
 import kotlinx.browser.window
 import util.Util

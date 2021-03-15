@@ -4,10 +4,10 @@ import CardSimulatorClient
 import assets.AssetManager
 import framework.rendering.*
 import framework.scene.Scene.SceneRenderer
-import game.Card
 import game.Game
-import game.Stack
 import game.Table
+import game.objects.Card
+import game.objects.Stack
 import input.Input
 import org.w3c.dom.*
 import util.math.Rectangle
@@ -25,15 +25,14 @@ object Rendering : SceneRenderer {
     private val STACK_COUNT_SIZE = Vector(20.0, 20.0)
 
     override fun render(ctx: CanvasRenderingContext2D) {
-        renderTable(ctx)
+        if(Game.loggedIn) {
+            renderTable(ctx)
+        }
     }
 
     fun renderTable(ctx: CanvasRenderingContext2D) {
         ctx.scale(Table.scale, Table.scale)
         ctx.translate(Table.offset.x, Table.offset.y)
-
-        ctx.color("#AAAAAA")
-        ctx.fillRect(100.0, 180.0, 100.0, 100.0)
 
 //        for(x in 0 until 10) {
 //            for(y in 0 until 10) {
@@ -50,6 +49,7 @@ object Rendering : SceneRenderer {
 //            ctx.lineTo(10000, y + 0.5);
 //        }
 
+        renderPlayerZones(ctx)
         renderGameObjects(ctx)
         renderPlayerCursors(ctx)
         renderSelectionArea(ctx)
@@ -70,16 +70,25 @@ object Rendering : SceneRenderer {
         ctx.imageSmoothingEnabled = true
         ctx.imageSmoothingQuality = ImageSmoothingQuality.HIGH
 
-        Table.gameObjects.sortBy { it.lastTouchedOnServer } // recently moved cards are at the top
+        Table.gameObjects.sortBy { gameObject ->
+            if (Game.gameInfo.playerZones.any { gameObject in it }) { // TODO: this is pretty performance hungry
+                return@sortBy gameObject.rect.x
+            } else {
+                return@sortBy gameObject.lastTouchedOnServer.toDouble()
+            }
+
+        } // recently moved cards are at the top
 
         Table.renderedGameObjects.forEach { gameObject ->
+            val inOtherPlayerZone = Game.gameInfo.playerZones.filterIndexed { index, playerZone -> index != Game.ownSeat && gameObject in playerZone }.any()
+
             when(gameObject) {
                 is Card -> {
-                    renderCard(ctx, gameObject.rect, gameObject.usedAsset, Table.selectedGameObjects.contains(gameObject))
+                    renderCard(ctx, gameObject.rect, gameObject.getUsedAsset(inOtherPlayerZone), Table.selectedGameObjects.contains(gameObject))
                 }
 
                 is Stack -> {
-                    renderCard(ctx, gameObject.rect, gameObject.usedAsset, Table.selectedGameObjects.contains(gameObject))
+                    renderCard(ctx, gameObject.rect, gameObject.getUsedAsset(inOtherPlayerZone), Table.selectedGameObjects.contains(gameObject))
                     // render count
                     ctx.color("#FFFFFF")
                     ctx.globalAlpha = 0.9
@@ -126,6 +135,15 @@ object Rendering : SceneRenderer {
         } else {
             ctx.color("#333333")
             ctx.fillRect(rect)
+        }
+    }
+
+    private fun renderPlayerZones(ctx: CanvasRenderingContext2D) {
+        Game.gameInfo.playerZones.forEach {
+            ctx.globalAlpha = 0.4
+            ctx.color(Game.gameInfo.seats[it.seatId].color)
+            ctx.fillRect(it.rect)
+            ctx.globalAlpha = 1.0
         }
     }
 

@@ -3,8 +3,9 @@ package game.players
 import Message
 import ServerCursorPositionMessage
 import ServerGameObjectPositionMessage
-import game.GameObject
-import game.Stack
+import game.GameManager
+import game.objects.GameObject
+import game.objects.Stack
 import org.eclipse.jetty.websocket.api.Session
 import util.math.Vector
 import websocket.WebsocketServer
@@ -48,13 +49,15 @@ class Player(val username: String, val session: Session) {
 
         // rate limit only, no retransmit
         if(!lastUpdateByGameObject.containsKey(gameObject.id) || Instant.now().isAfter(lastUpdateByGameObject[gameObject.id]!!.plus(MIN_OBJECT_UPDATE_INTERVAL))) {
-            gameObject.pos = newPos
-            gameObject.lastTouchedOnServer = System.currentTimeMillis()
-            PlayerManager.broadcast(ServerGameObjectPositionMessage(newPos, gameObject.id, seat!!))
+            GameManager.setGameObjectPos(gameObject, newPos)
+
+            if(GameManager.gameInfo.playerZones.none {gameObject in it}) {
+                PlayerManager.broadcast(ServerGameObjectPositionMessage(gameObject.pos, gameObject.id, seat!!)) // avoid moving card back to top
+            }
             lastUpdateByGameObject[gameObject.id] = Instant.now()
 
             if(gameObject is Stack) {
-                gameObject.stackedObjects.forEach { it.pos = newPos } // not sent, done on client as well
+                gameObject.stackedObjects.forEach { it.pos = gameObject.pos } // not sent, done on client as well
             }
         } else {
 //            val oldPos = gameObject.pos

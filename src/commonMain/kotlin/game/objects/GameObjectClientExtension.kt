@@ -1,4 +1,4 @@
-package game
+package game.objects
 
 import util.Util
 import kotlin.math.pow
@@ -16,7 +16,7 @@ open class GameObjectClientExtension(val gameObject: GameObject) {
     var lastGrabTime: Long = 0
 
     open fun update(delta: Double) {
-        if(!grabbed && Util.currentTimeMillis() - lastGrabTime > 500) {
+        if(!grabbed && Util.currentTimeMillis() - lastGrabTime > 50) {
             if((gameObject.pos - serverPos).lengthSquared() < 1.0) {
                 gameObject.pos = serverPos
             } else {
