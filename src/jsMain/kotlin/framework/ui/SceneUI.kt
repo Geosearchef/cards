@@ -1,7 +1,7 @@
 package framework.ui
 
 import org.w3c.dom.CanvasRenderingContext2D
-import org.w3c.dom.events.MouseEvent
+import org.w3c.dom.events.Event
 import util.math.Vector
 
 abstract class SceneUI(val width: Int, val height: Int) {
@@ -20,7 +20,7 @@ abstract class SceneUI(val width: Int, val height: Int) {
         components.remove(component)
     }
 
-    open fun onUIPressed(mousePosition: Vector, event: MouseEvent) {
+    open fun onUIPressed(mousePosition: Vector, event: Event) {
 
     }
     abstract fun isMouseEventOnUI(mousePosition: Vector): Boolean
