@@ -11,9 +11,12 @@ import game.GameObject
 import game.Stack
 import game.Table
 import kotlinx.browser.window
+import org.w3c.dom.TouchEvent
 import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.MouseEvent
+import org.w3c.dom.events.MouseEventInit
 import org.w3c.dom.events.WheelEvent
+import org.w3c.dom.get
 import util.Util
 import util.math.Vector
 import util.math.rectangleOf
@@ -176,6 +179,45 @@ object Input : SceneInput() {
 
         Table.offset = (mousePosition / Table.scale) - mousePositionTable
         CardSimulatorClient.requestRender()
+    }
+
+    override fun onTouchMove(event: TouchEvent, isOnUI: Boolean) {
+        event.preventDefault()
+
+        val mouseEvent = MouseEvent("mousemove", MouseEventInit(
+            clientX = event.touches[0]?.clientX ?: 0,
+            clientY = event.touches[0]?.clientY ?: 0
+        ))
+        console.log("TouchMove - pos: $mousePosition, mov: $mouseMovement")
+        onMouseMove(mouseEvent, isOnUI)
+    }
+
+    override fun onTouchStart(event: TouchEvent, isOnUI: Boolean) {
+        event.preventDefault()
+
+        if(isOnUI) {
+            return
+        }
+
+        val mouseEvent = MouseEvent("mousedown", MouseEventInit(
+            clientX = event.touches[0]?.clientX ?: 0,
+            clientY = event.touches[0]?.clientY ?: 0
+        ))
+        onMouseDown(mouseEvent, isOnUI)
+    }
+
+    override fun onTouchEnd(event: TouchEvent, isOnUI: Boolean) {
+        event.preventDefault()
+
+        if(isOnUI) {
+            return
+        }
+
+        val mouseEvent = MouseEvent("mouseup", MouseEventInit(
+            clientX = event.touches[0]?.clientX ?: 0,
+            clientY = event.touches[0]?.clientY ?: 0
+        ))
+        onMouseUp(mouseEvent, isOnUI)
     }
 
     override fun onKeyDown(event: KeyboardEvent) {
