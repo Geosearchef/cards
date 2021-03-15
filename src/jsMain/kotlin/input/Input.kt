@@ -56,10 +56,11 @@ object Input : SceneInput() {
             Table.setSelection(rectangleOf(selectionAreaStart, mousePositionTable))
         }
 
-        grabbedGameObject?.let { grabbedGameObject ->
-            if (! checkStackGrab(grabbedGameObject)) {
+        grabbedGameObject?.let {
+            if (! checkStackGrab(it)) {
                 return@let
             }
+            val grabbedGameObject = grabbedGameObject ?: return@let // might have changed due to grab check
 
             grabbedGameObject.pos = mousePositionTable - grabOffset
             Table.selectedGameObjects.filter { it != grabbedGameObject }.forEach {

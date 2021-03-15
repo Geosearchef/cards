@@ -25,6 +25,10 @@ object Table {
     fun onServerGameObjectPosition(gameObject: GameObject, pos: Vector) {
         gameObject.clientExtension.serverPos = pos
         gameObject.lastTouchedOnServer = Util.currentTimeMillis()
+
+        if(gameObject is Stack) {
+            gameObject.stackedObjects.forEach { it.clientExtension.serverPos = pos }
+        }
     }
 
     fun onServerStackInfo(stack: Stack, stackedObjects: List<StackableGameObject>) {

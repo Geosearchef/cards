@@ -4,6 +4,7 @@ import Message
 import ServerCursorPositionMessage
 import ServerGameObjectPositionMessage
 import game.GameObject
+import game.Stack
 import org.eclipse.jetty.websocket.api.Session
 import util.math.Vector
 import websocket.WebsocketServer
@@ -51,6 +52,10 @@ class Player(val username: String, val session: Session) {
             gameObject.lastTouchedOnServer = System.currentTimeMillis()
             PlayerManager.broadcast(ServerGameObjectPositionMessage(newPos, gameObject.id, seat!!))
             lastUpdateByGameObject[gameObject.id] = Instant.now()
+
+            if(gameObject is Stack) {
+                gameObject.stackedObjects.forEach { it.pos = newPos } // not sent, done on client as well
+            }
         } else {
 //            val oldPos = gameObject.pos
 //            executor.schedule({
