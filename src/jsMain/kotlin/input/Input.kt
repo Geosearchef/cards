@@ -3,14 +3,18 @@ package input
 import CardSimulatorClient
 import ClientFlipObjectMessage
 import ClientGameObjectReleasedMessage
+import ClientUnstackGameObjectMessage
 import framework.input.GenericInput.KEY_F
 import framework.scene.SceneInput
 import game.Game
 import game.GameObject
+import game.Stack
 import game.Table
+import kotlinx.browser.window
 import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.MouseEvent
 import org.w3c.dom.events.WheelEvent
+import util.Util
 import util.math.Vector
 import util.math.rectangleOf
 import websocket.WebsocketClient
@@ -22,6 +26,9 @@ object Input : SceneInput() {
     private const val MIN_ZOOM = 0.8
     private const val MAX_ZOOM = 9.0
 
+    private const val MAX_STACK_GRAB_DISTANCE = 10.0
+    private const val STACK_GRAB_DELAY_MS = 500
+
 
     var mousePositionTable = Vector(0.0, 0.0)
 
@@ -30,6 +37,10 @@ object Input : SceneInput() {
 
     var grabbedGameObject: GameObject? = null
     var grabOffset: Vector = Vector()
+
+    var grabStartPosition: Vector = Vector()
+    var grabStartTime: Long = 0
+    var stackGrabbed: Boolean = false
 
     override fun onMouseMove(event: MouseEvent, isOnUI: Boolean) {
         mousePositionTable = (mousePosition / Table.scale) - Table.offset
@@ -46,6 +57,10 @@ object Input : SceneInput() {
         }
 
         grabbedGameObject?.let { grabbedGameObject ->
+            if (! checkStackGrab(grabbedGameObject)) {
+                return@let
+            }
+
             grabbedGameObject.pos = mousePositionTable - grabOffset
             Table.selectedGameObjects.filter { it != grabbedGameObject }.forEach {
                 it.pos += mouseMovement / Table.scale
@@ -54,6 +69,30 @@ object Input : SceneInput() {
             Table.selectedGameObjects.forEach { Table.onGameObjectMoved(it) }
         }
     }
+
+    private fun checkStackGrab(grabbedGameObject: GameObject): Boolean {
+        if (grabbedGameObject is Stack && !stackGrabbed) {
+            val passedTime = Util.currentTimeMillis() - grabStartTime
+            if ((grabStartPosition - mousePositionTable).length() > MAX_STACK_GRAB_DISTANCE
+                && passedTime < STACK_GRAB_DELAY_MS
+                && Table.selectedGameObjects.isEmpty()) {
+                grabbedGameObject.topObject?.let {
+                    Table.selectedGameObjects.add(it)
+                    Input.grabbedGameObject = it
+                    it.pos = mousePositionTable - grabOffset
+                    WebsocketClient.send(ClientUnstackGameObjectMessage(it.id))
+                }
+                return false
+            } else if (passedTime >= STACK_GRAB_DELAY_MS) {
+                Table.selectedGameObjects.add(grabbedGameObject)
+                stackGrabbed = true
+            } else {
+                return false
+            }
+        }
+        return true
+    }
+
 
     override fun onMouseDown(event: MouseEvent, isOnUI: Boolean) {
         if(isOnUI) {
@@ -68,13 +107,29 @@ object Input : SceneInput() {
                 if(pressedGameObject != null) {
                     if(!Table.selectedGameObjects.contains(pressedGameObject)) {
                         Table.selectedGameObjects.clear()
-                        Table.selectedGameObjects.add(pressedGameObject)
+                        if(pressedGameObject !is Stack) {
+                            Table.selectedGameObjects.add(pressedGameObject)
+                        } else {
+                            Table.selectedGameObjects.remove(pressedGameObject)
+                        }
                     }
 
                     // grab
                     if(Game.ownSeat != null) {
                         grabbedGameObject = pressedGameObject
                         grabOffset = mousePositionTable - pressedGameObject.pos
+
+                        grabStartPosition = mousePositionTable
+                        grabStartTime = Util.currentTimeMillis()
+
+                        if(pressedGameObject is Stack) {
+                            stackGrabbed = false
+                            window.setTimeout({
+                                if(grabbedGameObject == pressedGameObject && !stackGrabbed) {
+                                    checkStackGrab(pressedGameObject)
+                                }
+                            }, STACK_GRAB_DELAY_MS)
+                        }
 
                         Table.selectedGameObjects.forEach { it.clientExtension.grabbed = true }
                     }

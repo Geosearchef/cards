@@ -69,3 +69,5 @@ data class ClientGameObjectReleasedMessage(val pos: Vector, val id: Long) : Mess
 
 @Serializable @SerialName("seStackInfo")
 data class ServerStackInfoMessage(val id: Long, val stackedObjects: List<Long>) : Message()
+@Serializable @SerialName("clUnstackObj")
+data class ClientUnstackGameObjectMessage(val id: Long) : Message()

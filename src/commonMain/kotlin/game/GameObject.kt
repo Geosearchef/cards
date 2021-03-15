@@ -50,6 +50,7 @@ class Stack(override var pos: Vector, override val size: Vector, override val fr
 
     @kotlinx.serialization.Transient
     var stackedObjects: MutableList<StackableGameObject> = ArrayList() // last element is on top
+    val topObject get() = stackedObjects.lastOrNull()
 
     override val usedAsset: String? get() = stackedObjects.lastOrNull()?.usedAsset
 

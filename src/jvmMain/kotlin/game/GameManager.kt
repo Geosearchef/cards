@@ -5,6 +5,7 @@ import ClientFlipObjectMessage
 import ClientGameObjectPositionMessage
 import ClientGameObjectReleasedMessage
 import ClientJoinSeatMessage
+import ClientUnstackGameObjectMessage
 import GameInfo
 import Message
 import SeatInfo
@@ -74,6 +75,15 @@ object GameManager {
                 }
                 is ClientGameObjectReleasedMessage -> {
                     gameObjects.find { it.id == msg.id }?.let { attemptStack(it, msg.pos) }
+                }
+                is ClientUnstackGameObjectMessage -> {
+                    gameObjects.filterIsInstance<StackableGameObject>().find { it.id == msg.id}?.let {
+                        if(it.stack?.topObject != it) {
+                            log.warn("${player.username} tried to unstack gameobject from the middle of a stack, blocking...")
+                        } else {
+                            removeFromStack(it)
+                        }
+                    }
                 }
             }
         }
