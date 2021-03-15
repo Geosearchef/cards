@@ -35,12 +35,15 @@ object Input : SceneInput() {
     var isTableMoving = false
     var selectionAreaStart: Vector? = null
 
+
+
     var grabbedGameObject: GameObject? = null
     var grabOffset: Vector = Vector()
 
     var grabStartPosition: Vector = Vector()
     var grabStartTime: Long = 0
     var stackGrabbed: Boolean = false
+
 
     override fun onMouseMove(event: MouseEvent, isOnUI: Boolean) {
         mousePositionTable = (mousePosition / Table.scale) - Table.offset
@@ -80,6 +83,7 @@ object Input : SceneInput() {
                 grabbedGameObject.topObject?.let {
                     Table.selectedGameObjects.add(it)
                     Input.grabbedGameObject = it
+                    it.clientExtension.grabbed = true
                     it.pos = mousePositionTable - grabOffset
                     WebsocketClient.send(ClientUnstackGameObjectMessage(it.id))
                 }
@@ -151,7 +155,10 @@ object Input : SceneInput() {
             grabbedGameObject = null
             isTableMoving = false
 
-            Table.gameObjects.forEach { it.clientExtension.grabbed = false }
+            Table.gameObjects.forEach {
+                it.clientExtension.grabbed = false
+                it.clientExtension.lastGrabTime = Util.currentTimeMillis()
+            }
         }
     }
 
