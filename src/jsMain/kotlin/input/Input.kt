@@ -41,6 +41,11 @@ object Input : SceneInput() {
 
 
     var grabbedGameObject: GameObject? = null
+    set(value) {
+        field?.let { it.clientExtension.grabbed = false }
+        field = value
+        field?.let { it.clientExtension.grabbed = true }
+    }
     var grabOffset: Vector = Vector()
 
     var grabStartPosition: Vector = Vector()
@@ -86,7 +91,6 @@ object Input : SceneInput() {
                 grabbedGameObject.topObject?.let {
                     Table.selectedGameObjects.add(it)
                     Input.grabbedGameObject = it
-                    it.clientExtension.grabbed = true
                     it.pos = mousePositionTable - grabOffset
                     WebsocketClient.send(ClientUnstackGameObjectMessage(it.id))
                 }
@@ -152,7 +156,10 @@ object Input : SceneInput() {
     override fun onMouseUp(event: MouseEvent, isOnUI: Boolean) {
 
         if(event.button.toInt() == 0) {
-            grabbedGameObject?.let { WebsocketClient.send(ClientGameObjectReleasedMessage(it.pos, it.id)) }
+            grabbedGameObject?.let {
+                Table.onGameObjectMoved(it)
+                WebsocketClient.send(ClientGameObjectReleasedMessage(it.pos, it.id))
+            }
 
             selectionAreaStart = null
             grabbedGameObject = null

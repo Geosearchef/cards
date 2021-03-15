@@ -3,6 +3,7 @@ package game
 import CardSimulatorClient
 import ClientCursorPositionMessage
 import ClientGameObjectPositionMessage
+import input.Input
 import kotlinx.browser.window
 import util.Util
 import util.math.Rectangle
@@ -40,6 +41,11 @@ object Table {
             it.stack = stack
             it.pos = stack.pos
             stack.stackedObjects.add(it)
+
+            selectedGameObjects.remove(it)
+            if(Input.grabbedGameObject == it) {
+                Input.grabbedGameObject = null
+            }
         }
     }
 
