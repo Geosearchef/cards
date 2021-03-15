@@ -5,8 +5,6 @@ import ClientEchoReplyMessage
 import ClientLoginMessage
 import Message
 import ServerEchoRequestMessage
-import ServerLoginMessage
-import api.Api
 import game.GameManager
 import game.players.PlayerManager
 import org.eclipse.jetty.websocket.api.Session
@@ -66,9 +64,7 @@ object WebsocketServer {
 
         if(message is ClientLoginMessage) {
             val success = PlayerManager.attemptLogin(message.username, session)
-            if(success) {
-                send(session, ServerLoginMessage(GameManager.gameInfo, Api.ASSET_TOKEN, System.currentTimeMillis()))
-            } else {
+            if (!success) {
                 session.close(StatusCode.PROTOCOL, "Username invalid or already taken")
                 return
             }

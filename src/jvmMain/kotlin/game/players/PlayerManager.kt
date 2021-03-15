@@ -1,11 +1,14 @@
 package game.players
 
 import Message
+import ServerLoginMessage
+import api.Api
 import game.GameManager
 import game.TaskProcessor
 import game.TaskProcessor.verifyTaskThread
 import org.eclipse.jetty.websocket.api.Session
 import util.Util
+import websocket.WebsocketServer
 import websocket.WebsocketServer.getRemoteHostAddress
 
 object PlayerManager {
@@ -50,6 +53,10 @@ object PlayerManager {
         }
         if(players.none { it.username == username }) {
             log.info("${session.getRemoteHostAddress()} logged in as $username")
+            WebsocketServer.send(
+                session,
+                ServerLoginMessage(GameManager.gameInfo, Api.ASSET_TOKEN, System.currentTimeMillis())
+            )
             TaskProcessor.addTask { addPlayer(Player(username, session)) }
             return true
         } else {
