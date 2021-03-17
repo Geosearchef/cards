@@ -6,6 +6,7 @@ import ClientGameObjectPositionMessage
 import ClientGameObjectReleasedMessage
 import ClientGroupObjectsMessage
 import ClientJoinSeatMessage
+import ClientShuffleStacksMessage
 import ClientUnstackGameObjectMessage
 import GameInfo
 import Message
@@ -27,6 +28,7 @@ import game.players.Player
 import game.players.PlayerManager.broadcast
 import game.players.PlayerManager.players
 import util.IdFactory
+import util.Util
 import util.Util.logger
 import util.math.Rectangle
 import util.math.Vector
@@ -104,6 +106,9 @@ object GameManager {
                 }
                 is ClientGroupObjectsMessage -> {
                     groupGameObjects(gameObjects.filter { msg.objs.contains(it.id) }.filterIsInstance<StackableGameObject>().filter { it.stack == null })
+                }
+                is ClientShuffleStacksMessage -> {
+                    gameObjects.filter { msg.objs.contains(it.id) }.filterIsInstance<Stack>().forEach { shuffleStack(it) }
                 }
             }
         }
@@ -230,6 +235,8 @@ object GameManager {
     }
 
     private fun groupGameObjects(objects: List<StackableGameObject>) {
+        verifyTaskThread()
+
         if(objects.size < 2) {
             return
         }
@@ -240,6 +247,13 @@ object GameManager {
 
         // could be done in one go with one update, would increase the amount of code, reduce network traffic
         objects.forEach { addToStack(it, stack) }
+    }
+
+    private fun shuffleStack(stack: Stack) {
+        verifyTaskThread()
+
+        Util.shuffleListInPlace(stack.stackedObjects)
+        broadcastStack(stack)
     }
 
     private fun addToStack(stackable: StackableGameObject, stack: Stack, bottom: Boolean = false) {

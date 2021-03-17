@@ -4,9 +4,11 @@ import CardSimulatorClient
 import ClientFlipObjectMessage
 import ClientGameObjectReleasedMessage
 import ClientGroupObjectsMessage
+import ClientShuffleStacksMessage
 import ClientUnstackGameObjectMessage
 import framework.input.GenericInput.KEY_F
 import framework.input.GenericInput.KEY_G
+import framework.input.GenericInput.KEY_S
 import framework.scene.SceneInput
 import game.Game
 import game.Table
@@ -242,6 +244,13 @@ object Input : SceneInput() {
         if(event.keyCode == KEY_G) {
             if(Table.selectedGameObjects.isNotEmpty()) {
                 WebsocketClient.send(ClientGroupObjectsMessage(Table.selectedGameObjects.map { it.id }.toTypedArray()))
+            }
+        }
+
+        if(event.keyCode == KEY_S) {
+            val selectedStacks = Table.selectedGameObjects.filterIsInstance<Stack>()
+            if(selectedStacks.isNotEmpty()) {
+                WebsocketClient.send(ClientShuffleStacksMessage(Table.selectedGameObjects.map { it.id }.toTypedArray()))
             }
         }
     }

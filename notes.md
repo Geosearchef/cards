@@ -6,9 +6,9 @@
 
 + mouse cursor
 + Drag cards
-- Group cards
++ Group cards
 + flip cards
-- shuffle cards
++ shuffle cards
 + Hand per player
 - shared text field for all game.players, editable only by host
 

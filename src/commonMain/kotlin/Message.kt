@@ -66,3 +66,6 @@ data class ClientUnstackGameObjectMessage(val id: Long) : Message()
 
 @Serializable @SerialName("clGroupObjs")
 data class ClientGroupObjectsMessage(val objs: Array<Long>) : Message()
+
+@Serializable @SerialName("clShuffleStacks")
+data class ClientShuffleStacksMessage(val objs: Array<Long>) : Message()
