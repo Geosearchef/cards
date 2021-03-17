@@ -1,3 +1,5 @@
 {
-  "assetsFolder": "../cards-assets/"
+  "assetsFolder": "../cards-assets/",
+  "playerCodes": ["player"],
+  "adminCodes": ["admin"]
 }

@@ -33,6 +33,7 @@ object Game {
     var loggedIn = false
     lateinit var gameInfo: GameInfo
     var serverTimestampOffset: Long = 0L // add to server timestamps to get local
+    var admin: Boolean = false
 
     val playersBySeat: MutableMap<Int, String> = HashMap()
     val players: Collection<String> get() = playersBySeat.values
@@ -47,7 +48,12 @@ object Game {
                 gameInfo = msg.gameInfo
                 AssetManager.ASSET_TOKEN = msg.assetToken
                 serverTimestampOffset = Util.currentTimeMillis() - msg.serverTimestamp
-                println("Timstamp offset: $serverTimestampOffset ms ahead")
+                console.log("Timstamp offset: $serverTimestampOffset ms ahead")
+
+                admin = msg.admin
+                if(admin) {
+                    console.log("We are admin!")
+                }
 
                 SeatsView.init()
                 loggedIn = true

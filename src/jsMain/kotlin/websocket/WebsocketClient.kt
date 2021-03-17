@@ -53,13 +53,28 @@ object WebsocketClient {
 
     fun onSocketClose() {
         console.log("Connection to websocket lost")
-        window.location.href = "/?connectionLost=true";
+
+        val queryParams = URLSearchParams(window.location.search)
+        var newLocation = "/?connectionLost=true"
+
+        queryParams.get("username")?.let {
+            newLocation += "&username=$it"
+        }
+        queryParams.get("code")?.let {
+            if(Game.loggedIn) {
+                newLocation += "&code=$it"
+            }
+        }
+
+        window.location.href = newLocation;
     }
 
     fun onSocketOpen() {
         console.log("Connected to websocket, logging in...")
-        val username = URLSearchParams(window.location.search).get("username") // TODO: put into central location (game / state)
-        username?.let { send(ClientLoginMessage(username)) }
+        val queryParams = URLSearchParams(window.location.search)
+        val username = queryParams.get("username") // TODO: put into central location (game / state)
+        val code = queryParams.get("code")
+        username?.let { send(ClientLoginMessage(username, code ?: "")) }
     }
 
     fun init() {

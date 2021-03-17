@@ -14,6 +14,9 @@ import websocket.WebsocketServer.getRemoteHostAddress
 object PlayerManager {
     val log = Util.logger()
 
+    var PLAYER_CODES: List<String> = emptyList()
+    var ADMIN_CODES: List<String> = emptyList()
+
     val players: MutableList<Player> = ArrayList()
 
     fun addPlayer(player: Player) { // broadcast to all others only happens on join / leave seat
@@ -42,7 +45,11 @@ object PlayerManager {
 
     fun getPlayerBySession(session: Session): Player? = players.find { it.session == session }
 
-    fun attemptLogin(username: String, session: Session): Boolean {
+    fun attemptLogin(username: String, code: String, session: Session): Boolean {
+        if(! PLAYER_CODES.contains(code) && ! ADMIN_CODES.contains(code)) {
+            log.info("${session.getRemoteHostAddress()} attempted to use invalid code")
+            return false
+        }
         if(username.isBlank()) {
             log.info("${session.getRemoteHostAddress()} attempted to use blank username")
             return false
@@ -52,12 +59,14 @@ object PlayerManager {
             return false
         }
         if(players.none { it.username == username }) {
-            log.info("${session.getRemoteHostAddress()} logged in as $username")
+            val admin = ADMIN_CODES.contains(code)
+
+            log.info("${session.getRemoteHostAddress()} logged in as $username (admin: $admin)")
             WebsocketServer.send(
                 session,
-                ServerLoginMessage(GameManager.gameInfo, Api.ASSET_TOKEN, System.currentTimeMillis())
+                ServerLoginMessage(GameManager.gameInfo, Api.ASSET_TOKEN, System.currentTimeMillis(), admin)
             )
-            TaskProcessor.addTask { addPlayer(Player(username, session)) }
+            TaskProcessor.addTask { addPlayer(Player(username, admin, session)) }
             return true
         } else {
             log.info("${session.getRemoteHostAddress()} attempted to grab already taken username $username, disconnecting...")

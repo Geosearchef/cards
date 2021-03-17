@@ -12,7 +12,7 @@ import websocket.WebsocketServer
 import java.time.Duration
 import java.time.Instant
 
-class Player(val username: String, val session: Session) {
+class Player(val username: String, val admin: Boolean, val session: Session) {
 
     private val MIN_CURSOR_UPDATE_INTERVAL = Duration.ofMillis(16)
     private val MIN_OBJECT_UPDATE_INTERVAL = Duration.ofMillis(12)

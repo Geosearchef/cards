@@ -63,9 +63,9 @@ object WebsocketServer {
         val message = Message.fromJson(json) // TODO: test crash
 
         if(message is ClientLoginMessage) {
-            val success = PlayerManager.attemptLogin(message.username, session)
+            val success = PlayerManager.attemptLogin(message.username, message.code, session)
             if (!success) {
-                session.close(StatusCode.PROTOCOL, "Username invalid or already taken")
+                session.close(StatusCode.PROTOCOL, "Username invalid or already taken or code invalid")
                 return
             }
         } else if(message is ClientEchoReplyMessage) {
