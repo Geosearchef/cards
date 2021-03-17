@@ -88,32 +88,41 @@ object Rendering : SceneRenderer {
                 }
 
                 is Stack -> {
-                    renderCard(ctx, gameObject.rect, gameObject.getUsedAsset(inOtherPlayerZone), Table.selectedGameObjects.contains(gameObject))
-                    // render count
-                    ctx.color("#FFFFFF")
-                    ctx.globalAlpha = 0.9
-                    ctx.roundRect(Rectangle(gameObject.center - STACK_COUNT_SIZE / 2.0, STACK_COUNT_SIZE.x, STACK_COUNT_SIZE.y), STACK_COUNT_OUTLINE_RADIUS)
-                    ctx.fill()
-                    ctx.globalAlpha = 1.0
-
-                    ctx.color("#000000")
-                    ctx.lineWidth = 0.5
-                    ctx.roundRect(Rectangle(gameObject.center - STACK_COUNT_SIZE / 2.0, STACK_COUNT_SIZE.x, STACK_COUNT_SIZE.y), STACK_COUNT_OUTLINE_RADIUS)
-                    ctx.lineWidth = 1.0
-                    ctx.stroke()
-
-                    ctx.color("#000000")
-                    ctx.font = "14px sans-serif"
-                    ctx.textAlign = CanvasTextAlign.CENTER
-                    ctx.textBaseline = CanvasTextBaseline.MIDDLE;
-                    ctx.fillText(gameObject.stackedObjects.size.toString(), gameObject.center.x, gameObject.center.y + 0.25)
-                    ctx.textAlign = CanvasTextAlign.LEFT
-                    ctx.textBaseline = CanvasTextBaseline.BOTTOM;
+                    renderStack(ctx, gameObject.rect, gameObject.getUsedAsset(inOtherPlayerZone), Table.selectedGameObjects.contains(gameObject), gameObject.stackedObjects.size)
                 }
 
                 else -> console.log("Couldn't render GameObject of unknown type")
             }
         }
+    }
+
+    private fun renderStack(ctx: CanvasRenderingContext2D, rect: Rectangle, asset: String?, selected: Boolean, stackedObjectsCount: Int) {
+        renderCard(ctx, rect, asset, selected)
+
+        // render count
+        ctx.color("#FFFFFF")
+        ctx.globalAlpha = 0.9
+        ctx.roundRect(
+            Rectangle(rect.center - STACK_COUNT_SIZE / 2.0, STACK_COUNT_SIZE.x, STACK_COUNT_SIZE.y),
+            STACK_COUNT_OUTLINE_RADIUS
+        )
+        ctx.fill()
+        ctx.globalAlpha = 1.0
+
+        ctx.color("#000000")
+        ctx.lineWidth = 0.5
+        ctx.roundRect(
+            Rectangle(rect.center - STACK_COUNT_SIZE / 2.0, STACK_COUNT_SIZE.x, STACK_COUNT_SIZE.y),
+            STACK_COUNT_OUTLINE_RADIUS
+        )
+        ctx.lineWidth = 1.0
+        ctx.stroke()
+
+        ctx.color("#000000")
+        ctx.font = "14px sans-serif"
+        ctx.textBaseline = CanvasTextBaseline.MIDDLE;
+        ctx.fillTextCentered(stackedObjectsCount.toString(), rect.center + Vector(y = 0.25))
+        ctx.textBaseline = CanvasTextBaseline.BOTTOM;
     }
 
     private fun renderCard(ctx: CanvasRenderingContext2D, rect: Rectangle, asset: String?, selected: Boolean) {
@@ -139,11 +148,29 @@ object Rendering : SceneRenderer {
     }
 
     private fun renderPlayerZones(ctx: CanvasRenderingContext2D) {
-        Game.gameInfo.playerZones.forEach {
+        Game.gameInfo.playerZones.forEach { playerZone ->
             ctx.globalAlpha = 0.4
-            ctx.color(Game.gameInfo.seats[it.seatId].color)
-            ctx.fillRect(it.rect)
+            val playerColor = Game.gameInfo.seats[playerZone.seatId].color
+            ctx.color(playerColor)
+            ctx.fillRect(playerZone.rect)
             ctx.globalAlpha = 1.0
+
+            Game.playersBySeat[playerZone.seatId]?.let { playerName ->
+                ctx.font = "18px sans-serif"
+//                ctx.lineWidth = 2.0
+//                ctx.miterLimit= 2.0
+////                ctx.color("#FFFFFF")
+//                ctx.color("#FFFFFF")
+//                ctx.strokeTextCentered(playerName, Vector(playerZone.rect.center.x, playerZone.rect.y) + Vector(0.0, 10.0))
+                ctx.color("#000000")
+//                ctx.color(playerColor)
+                //TODO: alternative: playerColor with black border, LARGE
+                if(playerZone.rect.y < 0) {
+                    ctx.fillTextCentered(playerName, Vector(playerZone.rect.center.x, playerZone.rect.y) - Vector(y = 16.0))
+                } else {
+                    ctx.fillTextCentered(playerName, Vector(playerZone.rect.center.x, playerZone.rect.y + playerZone.rect.height) + Vector(y = 16.0))
+                }
+            }
         }
     }
 
