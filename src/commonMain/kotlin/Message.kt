@@ -69,3 +69,6 @@ data class ClientGroupObjectsMessage(val objs: Array<Long>) : Message()
 
 @Serializable @SerialName("clShuffleStacks")
 data class ClientShuffleStacksMessage(val objs: Array<Long>) : Message()
+
+@Serializable @SerialName("clDealStack")
+data class ClientDealStackMessage(val stackId: Long) : Message()

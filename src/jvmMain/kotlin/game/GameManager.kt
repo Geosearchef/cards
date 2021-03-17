@@ -1,6 +1,7 @@
 package game
 
 import ClientCursorPositionMessage
+import ClientDealStackMessage
 import ClientFlipObjectMessage
 import ClientGameObjectPositionMessage
 import ClientGameObjectReleasedMessage
@@ -109,6 +110,11 @@ object GameManager {
                 }
                 is ClientShuffleStacksMessage -> {
                     gameObjects.filter { msg.objs.contains(it.id) }.filterIsInstance<Stack>().forEach { shuffleStack(it) }
+                }
+                is ClientDealStackMessage -> {
+                    (gameObjects.find { it.id == msg.stackId } as? Stack)?.let {
+                        dealFromStack(it)
+                    }
                 }
             }
         }
@@ -296,6 +302,21 @@ object GameManager {
 
     private fun broadcastStack(stack: Stack) {
         broadcast(ServerStackInfoMessage(stack.id, stack.stackedObjects.map { it.id }))
+    }
+
+    private fun dealFromStack(stack: Stack) {
+        players.filter { it.seat != null }.forEach { player ->
+            if(stack.stackedObjects.isNotEmpty()) {
+                gameInfo.playerZones.find { it.seatId == player.seat }?.let { playerZone ->
+                    val dealtObj = stack.stackedObjects.removeAt(stack.stackedObjects.size - 1)
+                    setGameObjectPos(dealtObj,
+                        playerZone.rect.pos + Vector(playerZone.rect.width - 10 - dealtObj.rect.width / 2.0, playerZone.rect.height / 2.0)
+                    )
+                }
+
+            }
+        }
+        broadcastStack(stack)
     }
 
 

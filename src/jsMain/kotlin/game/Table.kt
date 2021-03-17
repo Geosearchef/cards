@@ -61,7 +61,7 @@ object Table {
     fun setSelection(rect: Rectangle) {
         selectedGameObjects.clear()
 
-        gameObjects.filter { it.center in rect }.forEach(selectedGameObjects::add)
+        gameObjects.filter { it.center in rect && (it as? StackableGameObject)?.stack == null }.forEach(selectedGameObjects::add)
     }
 
     // client sided

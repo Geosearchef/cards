@@ -1,11 +1,13 @@
 package input
 
 import CardSimulatorClient
+import ClientDealStackMessage
 import ClientFlipObjectMessage
 import ClientGameObjectReleasedMessage
 import ClientGroupObjectsMessage
 import ClientShuffleStacksMessage
 import ClientUnstackGameObjectMessage
+import framework.input.GenericInput.KEY_D
 import framework.input.GenericInput.KEY_F
 import framework.input.GenericInput.KEY_G
 import framework.input.GenericInput.KEY_S
@@ -233,24 +235,33 @@ object Input : SceneInput() {
     }
 
     override fun onKeyDown(event: KeyboardEvent) {
-        if(event.keyCode == KEY_F) {
-            if(Table.selectedGameObjects.isNotEmpty()) {
+        if (event.keyCode == KEY_F) {
+            if (Table.selectedGameObjects.isNotEmpty()) {
                 WebsocketClient.send(ClientFlipObjectMessage(Table.selectedGameObjects
                     .filter { (it as? StackableGameObject)?.stack == null }.map { it.id }.toTypedArray()
-                ))
+                )
+                )
             }
         }
 
-        if(event.keyCode == KEY_G) {
-            if(Table.selectedGameObjects.isNotEmpty()) {
+        if (event.keyCode == KEY_G) {
+            if (Table.selectedGameObjects.isNotEmpty()) {
                 WebsocketClient.send(ClientGroupObjectsMessage(Table.selectedGameObjects.map { it.id }.toTypedArray()))
             }
         }
 
-        if(event.keyCode == KEY_S) {
+        if (event.keyCode == KEY_S) {
             val selectedStacks = Table.selectedGameObjects.filterIsInstance<Stack>()
-            if(selectedStacks.isNotEmpty()) {
+            if (selectedStacks.isNotEmpty()) {
                 WebsocketClient.send(ClientShuffleStacksMessage(Table.selectedGameObjects.map { it.id }.toTypedArray()))
+            }
+        }
+
+        if (event.keyCode == KEY_D) {
+            if (Table.selectedGameObjects.isNotEmpty()) {
+                Table.selectedGameObjects.find { (it as? StackableGameObject)?.stack == null }?.let { stack ->
+                    WebsocketClient.send(ClientDealStackMessage(stack.id))
+                }
             }
         }
     }
