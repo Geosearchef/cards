@@ -14,7 +14,7 @@
 
 - spawn cards
 - context menu (spawn, flip, group, shuffle, deal)
-- deal cards
++ deal cards
 
 - touch?
 - order may be different when same timestamp --> sort by id

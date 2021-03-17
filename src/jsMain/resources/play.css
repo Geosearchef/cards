@@ -61,6 +61,7 @@ input {
 #table-canvas {
     width: 100%;
     height: 100%;
+    background-color: white;
 }
 
 .overlay {
@@ -71,6 +72,33 @@ input {
     /*bottom: 0;*/
     z-index: 2;
     /*cursor: pointer;*/
+}
+
+:fullscreen {
+  background-color: white;
+}
+
+#actions-overlay {
+    width: 130pt;
+    height: 250pt;
+    margin-left: 15pt;
+    margin-top: 15pt;
+    padding-top: 10pt;
+    background-color: rgba(230,230,230,0.7);
+    left: 0;
+    top: 0;
+    float: left;
+}
+
+#actions-list {
+    margin-top: 12pt;
+}
+
+#actions-list > input {
+    margin: auto;
+    margin-top: 10pt;
+    display: block;
+    width: 80pt;
 }
 
 #seats-overlay {

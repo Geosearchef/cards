@@ -1,11 +1,7 @@
 package input
 
 import CardSimulatorClient
-import ClientDealStackMessage
-import ClientFlipObjectMessage
 import ClientGameObjectReleasedMessage
-import ClientGroupObjectsMessage
-import ClientShuffleStacksMessage
 import ClientUnstackGameObjectMessage
 import framework.input.GenericInput.KEY_D
 import framework.input.GenericInput.KEY_F
@@ -16,7 +12,6 @@ import game.Game
 import game.Table
 import game.objects.GameObject
 import game.objects.Stack
-import game.objects.StackableGameObject
 import kotlinx.browser.window
 import org.w3c.dom.TouchEvent
 import org.w3c.dom.events.KeyboardEvent
@@ -236,33 +231,19 @@ object Input : SceneInput() {
 
     override fun onKeyDown(event: KeyboardEvent) {
         if (event.keyCode == KEY_F) {
-            if (Table.selectedGameObjects.isNotEmpty()) {
-                WebsocketClient.send(ClientFlipObjectMessage(Table.selectedGameObjects
-                    .filter { (it as? StackableGameObject)?.stack == null }.map { it.id }.toTypedArray()
-                )
-                )
-            }
+            Game.onFlipRequested()
         }
 
         if (event.keyCode == KEY_G) {
-            if (Table.selectedGameObjects.isNotEmpty()) {
-                WebsocketClient.send(ClientGroupObjectsMessage(Table.selectedGameObjects.map { it.id }.toTypedArray()))
-            }
+            Game.onGroupRequested()
         }
 
         if (event.keyCode == KEY_S) {
-            val selectedStacks = Table.selectedGameObjects.filterIsInstance<Stack>()
-            if (selectedStacks.isNotEmpty()) {
-                WebsocketClient.send(ClientShuffleStacksMessage(Table.selectedGameObjects.map { it.id }.toTypedArray()))
-            }
+            Game.onShuffleRequested()
         }
 
         if (event.keyCode == KEY_D) {
-            if (Table.selectedGameObjects.isNotEmpty()) {
-                Table.selectedGameObjects.find { (it as? StackableGameObject)?.stack == null }?.let { stack ->
-                    WebsocketClient.send(ClientDealStackMessage(stack.id))
-                }
-            }
+            Game.onDealRequested()
         }
     }
 

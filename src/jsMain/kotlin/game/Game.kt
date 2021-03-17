@@ -1,7 +1,11 @@
 package game
 
 import CardSimulatorClient
+import ClientDealStackMessage
+import ClientFlipObjectMessage
+import ClientGroupObjectsMessage
 import ClientJoinSeatMessage
+import ClientShuffleStacksMessage
 import GameInfo
 import Message
 import SeatInfo
@@ -17,6 +21,10 @@ import ServerStackInfoMessage
 import assets.AssetManager
 import game.objects.Stack
 import game.objects.StackableGameObject
+import kotlinx.browser.document
+import kotlinx.browser.window
+import org.w3c.dom.HTMLBodyElement
+import org.w3c.dom.HTMLInputElement
 import util.Util
 import websocket.WebsocketClient
 
@@ -130,6 +138,36 @@ object Game {
         WebsocketClient.send(ClientJoinSeatMessage(seatId))
     }
 
+    fun onDealRequested() {
+        if (Table.selectedGameObjects.isNotEmpty()) {
+            Table.selectedGameObjects.find { (it as? StackableGameObject)?.stack == null }?.let { stack ->
+                WebsocketClient.send(ClientDealStackMessage(stack.id))
+            }
+        }
+    }
+
+    fun onShuffleRequested() {
+        val selectedStacks = Table.selectedGameObjects.filterIsInstance<Stack>()
+        if (selectedStacks.isNotEmpty()) {
+            WebsocketClient.send(ClientShuffleStacksMessage(Table.selectedGameObjects.map { it.id }.toTypedArray()))
+        }
+    }
+
+    fun onGroupRequested() {
+        if (Table.selectedGameObjects.isNotEmpty()) {
+            WebsocketClient.send(ClientGroupObjectsMessage(Table.selectedGameObjects.map { it.id }.toTypedArray()))
+        }
+    }
+
+    fun onFlipRequested() {
+        if (Table.selectedGameObjects.isNotEmpty()) {
+            WebsocketClient.send(ClientFlipObjectMessage(Table.selectedGameObjects
+                .filter { (it as? StackableGameObject)?.stack == null }.map { it.id }.toTypedArray()
+            )
+            )
+        }
+    }
+
     fun getPlayerColor(playerName: String) : String? = getPlayerSeat(playerName)?.color
 
     fun getPlayerSeat(playerName: String): SeatInfo? {
@@ -138,7 +176,27 @@ object Game {
         }
     }
 
+    var fullscreen = false
     fun init() {
-
+        window.onload = {
+            (document.getElementById("flip-button") as HTMLInputElement).onclick = { Game.onFlipRequested() }
+            (document.getElementById("group-button") as HTMLInputElement).onclick = { Game.onGroupRequested() }
+            (document.getElementById("shuffle-button") as HTMLInputElement).onclick = { Game.onShuffleRequested() }
+            (document.getElementById("deal-button") as HTMLInputElement).onclick = { Game.onDealRequested() }
+            (document.getElementById("fullscreen-button") as HTMLInputElement).onclick = {
+                if(fullscreen) {
+                    console.log("Exiting fullscreen")
+                    document.exitFullscreen()
+                    fullscreen = false
+                } else {
+                    console.log("Entering fullscreen")
+                    val body = (document.getElementById("body") as HTMLBodyElement)
+                    body.requestFullscreen()
+                    fullscreen = true
+                }
+            }
+            "".asDynamic()
+        }
     }
+
 }
