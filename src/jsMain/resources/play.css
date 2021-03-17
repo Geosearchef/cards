@@ -49,8 +49,8 @@ button:hover {
 }
 
 input {
-    margin-top: 3pt;
-    margin-bottom: 8pt;
+    margin-top: 2pt;
+    margin-bottom: 5pt;
 }
 
 .seat-button {
@@ -80,7 +80,7 @@ input {
 
 #actions-overlay {
     width: 130pt;
-    height: 250pt;
+    height: 265pt;
     margin-left: 15pt;
     margin-top: 15pt;
     padding-top: 10pt;
@@ -96,14 +96,19 @@ input {
 
 #actions-list > input {
     margin: auto;
-    margin-top: 10pt;
+    margin-top: 2pt;
+    margin-bottom: 5pt;
     display: block;
     width: 80pt;
 }
 
+#admin-actions-list > input {
+    background: #e7b1b1;
+}
+
 #seats-overlay {
     width: 130pt;
-    height: 250pt;
+    height: 265pt;
     margin-right: 15pt;
     margin-top: 15pt;
     padding-top: 10pt;

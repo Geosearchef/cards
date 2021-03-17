@@ -20,10 +20,10 @@ data class ClientLoginMessage(val username: String, val code: String) : Message(
 @Serializable
 data class ServerLoginMessage(val gameInfo: GameInfo, val assetToken: String, val serverTimestamp: Long, val admin: Boolean) : Message()
 
-@Serializable
+@Serializable @SerialName("clEchoRep")
 data class ClientEchoReplyMessage(val serverTimestamp: Long) : Message()
 
-@Serializable
+@Serializable @SerialName("seEchoReq")
 data class ServerEchoRequestMessage(val serverTimestamp: Long, val lastRTT: Int) : Message()
 
 @Serializable
@@ -72,3 +72,8 @@ data class ClientShuffleStacksMessage(val objs: Array<Long>) : Message()
 
 @Serializable @SerialName("clDealStack")
 data class ClientDealStackMessage(val stackId: Long) : Message()
+
+@Serializable @SerialName("clDeleteObj")
+data class ClientAdminDeleteGameObjectsMessage(val objs: List<Long>) : Message()
+@Serializable @SerialName("clDeleteAll")
+class ClientAdminDeleteAllGameObjectsMessage() : Message()

@@ -1,6 +1,8 @@
 package game
 
 import CardSimulatorClient
+import ClientAdminDeleteAllGameObjectsMessage
+import ClientAdminDeleteGameObjectsMessage
 import ClientDealStackMessage
 import ClientFlipObjectMessage
 import ClientGroupObjectsMessage
@@ -24,6 +26,7 @@ import game.objects.StackableGameObject
 import kotlinx.browser.document
 import kotlinx.browser.window
 import org.w3c.dom.HTMLBodyElement
+import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
 import util.Util
 import websocket.WebsocketClient
@@ -53,6 +56,7 @@ object Game {
                 admin = msg.admin
                 if(admin) {
                     console.log("We are admin!")
+                    (document.getElementById("admin-actions-list") as HTMLDivElement).style.display = "block" // TODO: extract to UI
                 }
 
                 SeatsView.init()
@@ -174,6 +178,16 @@ object Game {
         }
     }
 
+    fun onGameObjectsDeleteRequested() {
+        if(Table.selectedGameObjects.isNotEmpty()) {
+            WebsocketClient.send(ClientAdminDeleteGameObjectsMessage(Table.selectedGameObjects.map{ it.id }))
+        }
+    }
+
+    fun onAllGameObjectsDeleteRequested() {
+        WebsocketClient.send(ClientAdminDeleteAllGameObjectsMessage())
+    }
+
     fun getPlayerColor(playerName: String) : String? = getPlayerSeat(playerName)?.color
 
     fun getPlayerSeat(playerName: String): SeatInfo? {
@@ -182,6 +196,7 @@ object Game {
         }
     }
 
+    //TODO: extract to UI
     var fullscreen = false
     fun init() {
         window.onload = {
@@ -201,6 +216,17 @@ object Game {
                     fullscreen = true
                 }
             }
+            (document.getElementById("delete-button") as HTMLInputElement).onclick = {
+                if(window.confirm(message = "Delete game objects ${Table.selectedGameObjects.map { it.id }} ?")) {
+                    Game.onGameObjectsDeleteRequested()
+                }
+            }
+            (document.getElementById("deleteall-button") as HTMLInputElement).onclick = {
+                if(window.confirm(message = "You are about to DELETE ALL game objects. Are you sure?")) {
+                    Game.onAllGameObjectsDeleteRequested()
+                }
+            }
+
             "".asDynamic()
         }
     }

@@ -1,5 +1,7 @@
 package game
 
+import ClientAdminDeleteAllGameObjectsMessage
+import ClientAdminDeleteGameObjectsMessage
 import ClientCursorPositionMessage
 import ClientDealStackMessage
 import ClientFlipObjectMessage
@@ -33,6 +35,7 @@ import util.Util
 import util.Util.logger
 import util.math.Rectangle
 import util.math.Vector
+import websocket.WebsocketServer.getRemoteHostAddress
 
 object GameManager {
 
@@ -117,6 +120,21 @@ object GameManager {
                     }
                 }
             }
+
+            if(! player.admin) {
+                return@addTask
+            }
+
+            when(msg) {
+                is ClientAdminDeleteGameObjectsMessage -> {
+                    println("As requested by ${player.username} from ${player.session.getRemoteHostAddress()}, deleting game objects: ${msg.objs}")
+                    gameObjects.filter { msg.objs.contains(it.id) }.forEach { removeGameObject(it) }
+                }
+                is ClientAdminDeleteAllGameObjectsMessage -> {
+                    println("DELETING ALL GAME OBJECTS as requested by ${player.username} from ${player.session.getRemoteHostAddress()}")
+                    ArrayList(gameObjects).forEach { removeGameObject(it) }
+                }
+            }
         }
     }
 
@@ -131,7 +149,25 @@ object GameManager {
 
     fun removeGameObject(gameObject: GameObject) {
         verifyTaskThread()
+
+        if(! gameObjects.contains(gameObject)) {
+            return // might happen due to recursive calls (stack already removed contaning the element)
+        }
+
         gameObjects.remove(gameObject)
+
+        // remove from stacks
+        gameObjects.filterIsInstance<Stack>().filter { it.stackedObjects.contains(gameObject) }.forEach {
+            removeFromStack(gameObject as StackableGameObject)
+        }
+
+        // remove contained objects if stack
+        if(gameObject is Stack) {
+            gameObject.stackedObjects.forEach {
+                it.stack = null // prevent stack removal and therefore broadcast, we are removing the stack anyways
+                removeGameObject(it)
+            }
+        }
 
         broadcast(ServerRemoveGameObjectMessage(gameObject.id))
     }
