@@ -84,6 +84,7 @@ object Game {
             }
 
             is ServerGameObjectPositionMessage -> {
+                console.log("Got position ${msg.pos} for ${msg.id}")
                 Table.gameObjects.find { it.id == msg.id }?.let { Table.onServerGameObjectPosition(it, msg.pos) }
             }
 

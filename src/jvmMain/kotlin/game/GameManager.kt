@@ -306,14 +306,17 @@ object GameManager {
 
     private fun dealFromStack(stack: Stack) {
         players.filter { it.seat != null }.forEach { player ->
-            if(stack.stackedObjects.isNotEmpty()) {
-                gameInfo.playerZones.find { it.seatId == player.seat }?.let { playerZone ->
-                    val dealtObj = stack.stackedObjects.removeAt(stack.stackedObjects.size - 1)
-                    setGameObjectPos(dealtObj,
-                        playerZone.rect.pos + Vector(playerZone.rect.width - 10 - dealtObj.rect.width / 2.0, playerZone.rect.height / 2.0)
+            gameInfo.playerZones.find { it.seatId == player.seat }?.let { playerZone ->
+                stack.topObject?.let { dealtObj ->
+                    removeFromStack(dealtObj)
+                    setGameObjectPos(
+                        dealtObj,
+                        playerZone.rect.pos + Vector(
+                            playerZone.rect.width - 10.0 - dealtObj.rect.width / 2.0,
+                            playerZone.rect.height / 2.0 - dealtObj.rect.height / 2.0
+                        )
                     )
                 }
-
             }
         }
         broadcastStack(stack)
