@@ -158,9 +158,16 @@ object Input : SceneInput() {
     override fun onMouseUp(event: MouseEvent, isOnUI: Boolean) {
 
         if(event.button.toInt() == 0) {
-            grabbedGameObject?.let {
-                Table.onGameObjectMoved(it)
-                WebsocketClient.send(ClientGameObjectReleasedMessage(it.pos, it.id))
+            if(grabbedGameObject is Stack && !stackGrabbed) {
+                with(Table.selectedGameObjects) {
+                    clear()
+                    add(grabbedGameObject!!)
+                }
+            } else {
+                grabbedGameObject?.let {
+                    Table.onGameObjectMoved(it)
+                    WebsocketClient.send(ClientGameObjectReleasedMessage(it.pos, it.id))
+                }
             }
 
             selectionAreaStart = null
