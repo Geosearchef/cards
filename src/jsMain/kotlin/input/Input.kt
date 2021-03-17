@@ -3,13 +3,16 @@ package input
 import CardSimulatorClient
 import ClientFlipObjectMessage
 import ClientGameObjectReleasedMessage
+import ClientGroupObjectsMessage
 import ClientUnstackGameObjectMessage
 import framework.input.GenericInput.KEY_F
+import framework.input.GenericInput.KEY_G
 import framework.scene.SceneInput
 import game.Game
 import game.Table
 import game.objects.GameObject
 import game.objects.Stack
+import game.objects.StackableGameObject
 import kotlinx.browser.window
 import org.w3c.dom.TouchEvent
 import org.w3c.dom.events.KeyboardEvent
@@ -230,7 +233,15 @@ object Input : SceneInput() {
     override fun onKeyDown(event: KeyboardEvent) {
         if(event.keyCode == KEY_F) {
             if(Table.selectedGameObjects.isNotEmpty()) {
-                WebsocketClient.send(ClientFlipObjectMessage(Table.selectedGameObjects.map { it.id }.toTypedArray()))
+                WebsocketClient.send(ClientFlipObjectMessage(Table.selectedGameObjects
+                    .filter { (it as? StackableGameObject)?.stack == null }.map { it.id }.toTypedArray()
+                ))
+            }
+        }
+
+        if(event.keyCode == KEY_G) {
+            if(Table.selectedGameObjects.isNotEmpty()) {
+                WebsocketClient.send(ClientGroupObjectsMessage(Table.selectedGameObjects.map { it.id }.toTypedArray()))
             }
         }
     }

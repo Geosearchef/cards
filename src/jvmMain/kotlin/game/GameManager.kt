@@ -4,6 +4,7 @@ import ClientCursorPositionMessage
 import ClientFlipObjectMessage
 import ClientGameObjectPositionMessage
 import ClientGameObjectReleasedMessage
+import ClientGroupObjectsMessage
 import ClientJoinSeatMessage
 import ClientUnstackGameObjectMessage
 import GameInfo
@@ -100,6 +101,9 @@ object GameManager {
                             removeFromStack(it)
                         }
                     }
+                }
+                is ClientGroupObjectsMessage -> {
+                    groupGameObjects(gameObjects.filter { msg.objs.contains(it.id) }.filterIsInstance<StackableGameObject>().filter { it.stack == null })
                 }
             }
         }
@@ -225,8 +229,29 @@ object GameManager {
         }
     }
 
+    private fun groupGameObjects(objects: List<StackableGameObject>) {
+        if(objects.size < 2) {
+            return
+        }
+
+        val center = objects.map { it.pos }.reduce { acc, pos -> acc + pos } / objects.size.toDouble()
+        val stack = Stack(center, objects.last().size.clone(), null, null)
+        addGameObject(stack)
+
+        // could be done in one go with one update, would increase the amount of code, reduce network traffic
+        objects.forEach { addToStack(it, stack) }
+    }
+
     private fun addToStack(stackable: StackableGameObject, stack: Stack, bottom: Boolean = false) {
         verifyTaskThread()
+
+        stackable.stack?.let {
+//            println("Couldn't add object ${stackable.id} to stack ${stack.id} as it is already in stack ${stackable.stack?.id}")
+            println("Object ${stackable.id} already in stack ${it.id}, removing to add to ${stack.id}")
+            stackable.stack = null
+            it.stackedObjects.remove(stackable)
+            broadcastStack(it)
+        }
 
         if(bottom) {
             stack.stackedObjects.add(0, stackable)

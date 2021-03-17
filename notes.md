@@ -9,9 +9,12 @@
 - Group cards
 + flip cards
 - shuffle cards
-- Hand per player
++ Hand per player
 - shared text field for all game.players, editable only by host
 
+- spawn cards
+- context menu (spawn, flip, group, shuffle, deal)
+- deal cards
 
 - touch?
 - order may be different when same timestamp --> sort by id

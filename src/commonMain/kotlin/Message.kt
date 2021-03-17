@@ -51,15 +51,7 @@ data class ClientGameObjectPositionMessage(val pos: Vector, val id: Long) : Mess
 data class ServerGameObjectPositionMessage(val pos: Vector, val id: Long, val seat: Int) : Message()
 
 @Serializable @SerialName("clFlipObjs")
-data class ClientFlipObjectMessage(val objs: Array<Long>) : Message() {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this::class != other::class) return false
-        return objs.contentEquals((other as ClientFlipObjectMessage).objs)
-    }
-
-    override fun hashCode() = objs.contentHashCode()
-}
+data class ClientFlipObjectMessage(val objs: Array<Long>) : Message()
 
 @Serializable @SerialName("seSetFlipObjs")
 data class ServerSetGameObjectsFlippedMessage(val objsStatus: Map<Long, Boolean>) : Message()
@@ -71,3 +63,6 @@ data class ClientGameObjectReleasedMessage(val pos: Vector, val id: Long) : Mess
 data class ServerStackInfoMessage(val id: Long, val stackedObjects: List<Long>) : Message()
 @Serializable @SerialName("clUnstackObj")
 data class ClientUnstackGameObjectMessage(val id: Long) : Message()
+
+@Serializable @SerialName("clGroupObjs")
+data class ClientGroupObjectsMessage(val objs: Array<Long>) : Message()

@@ -16,6 +16,7 @@ import org.w3c.dom.events.WheelEvent
 object GenericInput : SceneInput() {
     const val KEY_A = 65
     const val KEY_F = 70
+    const val KEY_G = 71
 
     private fun onMouseMove(event: Event) {
         if(event !is MouseEvent) throw RuntimeException("Event of wrong type")
