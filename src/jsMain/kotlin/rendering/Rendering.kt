@@ -24,6 +24,7 @@ object Rendering : SceneRenderer {
     private const val CARD_OUTLINE_COLOR_SELECTED = "#4fb3ff"
     private const val STACK_COUNT_OUTLINE_RADIUS = 4.0
     private val STACK_COUNT_SIZE = Vector(20.0, 20.0)
+    private const val PLAYER_ZONE_CORNER_RADIUS = 10.0
 
     var screenRectOnTable = Rectangle(0.0,0.0,10.0,10.0)
     var width = 0
@@ -166,11 +167,16 @@ object Rendering : SceneRenderer {
 
     private fun renderPlayerZones(ctx: CanvasRenderingContext2D) {
         Game.gameInfo.playerZones.forEach { playerZone ->
-            ctx.globalAlpha = 0.4
+//            ctx.globalAlpha = 0.4
+            ctx.lineWidth = 2.0
             val playerColor = Game.gameInfo.seats[playerZone.seatId].color
             ctx.color(playerColor)
-            ctx.fillRect(playerZone.rect)
+            ctx.globalAlpha = 0.2
+            ctx.roundRect(playerZone.rect, PLAYER_ZONE_CORNER_RADIUS)
+            ctx.fill()
             ctx.globalAlpha = 1.0
+            ctx.roundRect(playerZone.rect, PLAYER_ZONE_CORNER_RADIUS)
+            ctx.stroke()
 
             Game.playersBySeat[playerZone.seatId]?.let { playerName ->
                 ctx.font = "18px sans-serif"

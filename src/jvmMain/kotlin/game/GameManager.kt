@@ -40,7 +40,7 @@ import websocket.WebsocketServer.getRemoteHostAddress
 object GameManager {
 
     const val MAX_STACK_DISTANCE_SQUARED = 10.0 * 10.0
-    const val PLAYER_ZONE_PADDING = 50.0
+    const val PLAYER_ZONE_PADDING = 28.0
     const val PLAYER_ZONE_CARD_PADDING = 6.0
     const val MAX_SELECTED_OBJECTS_TO_CHECK_PLAYER_HAND = 10
 
@@ -55,11 +55,11 @@ object GameManager {
             SeatInfo(4, "#74F74F"),
         ),
         arrayOf(
-            PlayerZone(0, Rectangle(-700.0, 250.0, 400.0, 160.0)),
-            PlayerZone(1, Rectangle(-200.0, 250.0, 400.0, 160.0)),
-            PlayerZone(2, Rectangle(300.0, 250.0, 400.0, 160.0)),
-            PlayerZone(3, Rectangle(-700.0, -350.0, 400.0, 160.0)),
-            PlayerZone(4, Rectangle(-200.0, -350.0, 400.0, 160.0)),
+            PlayerZone(0, Rectangle(-575.0, 230.0, 350.0, 140.0)),
+            PlayerZone(1, Rectangle(-175.0, 230.0, 350.0, 140.0)),
+            PlayerZone(2, Rectangle(225.0, 230.0, 350.0, 140.0)),
+            PlayerZone(3, Rectangle(-575.0, -330.0, 350.0, 140.0)),
+            PlayerZone(4, Rectangle(-175.0, -330.0, 350.0, 140.0)),
         ),
         Deck.values().map { it.identifier }
     )
