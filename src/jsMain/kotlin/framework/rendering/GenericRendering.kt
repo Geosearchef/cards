@@ -31,7 +31,7 @@ object GenericRendering {
         height = canvas.height.toDouble()
         ctx.clearRect(0.0, 0.0, width, height)
 
-        SceneManager.currentScene.renderer.render(ctx)
+        SceneManager.currentScene.renderer.render(ctx, canvas.width, canvas.height)
         SceneManager.currentScene.uiManager.getUI().render(ctx)
 
         // render frametime

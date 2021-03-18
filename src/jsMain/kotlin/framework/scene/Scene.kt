@@ -13,6 +13,6 @@ open class Scene(val input: SceneInput, val update: SceneUpdate, val renderer: S
         fun update(delta: Double)
     }
     interface SceneRenderer {
-        fun render(ctx: CanvasRenderingContext2D)
+        fun render(ctx: CanvasRenderingContext2D, width: Int, height: Int)
     }
 }

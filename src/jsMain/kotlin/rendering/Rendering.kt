@@ -25,7 +25,14 @@ object Rendering : SceneRenderer {
     private const val STACK_COUNT_OUTLINE_RADIUS = 4.0
     private val STACK_COUNT_SIZE = Vector(20.0, 20.0)
 
-    override fun render(ctx: CanvasRenderingContext2D) {
+    var screenRectOnTable = Rectangle(0.0,0.0,10.0,10.0)
+    var width = 0
+    var height = 0
+
+    override fun render(ctx: CanvasRenderingContext2D, width: Int, height: Int) {
+        Rendering.width = width
+        Rendering.height = height
+
         if(Game.loggedIn) {
             renderTable(ctx)
         }
@@ -35,6 +42,10 @@ object Rendering : SceneRenderer {
         ctx.scale(Table.scale, Table.scale)
         ctx.translate(Table.offset.x, Table.offset.y)
 
+        screenRectOnTable = Rectangle(- Table.offset, (width) / Table.scale, height / Table.scale)
+
+        ctx.color("#333333")
+//        ctx.fillRect(screenRectOnTable)
 //        for(x in 0 until 10) {
 //            for(y in 0 until 10) {
 //                ctx.
@@ -82,6 +93,10 @@ object Rendering : SceneRenderer {
 
         Table.renderedGameObjects.forEach { gameObject ->
             val inOtherPlayerZone = Game.gameInfo.playerZones.filterIndexed { index, playerZone -> index != Game.ownSeat && gameObject in playerZone }.any()
+
+            if(gameObject.rect.corners.none { it in screenRectOnTable }) {
+                return@forEach
+            }
 
             when(gameObject) {
                 is Card -> {

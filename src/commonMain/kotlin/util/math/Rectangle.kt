@@ -19,6 +19,12 @@ class Rectangle(var x: Double, var y: Double, var width: Double, var height: Dou
     }
 
     val center: Vector get() = pos + Vector(width / 2.0, height / 2.0)
+    val corners: List<Vector> get() = listOf(
+        pos,
+        pos + Vector(x = width),
+        pos + Vector(y = height),
+        pos + Vector(width, height)
+    )
 }
 
 fun rectangleOf(v1: Vector, v2: Vector): Rectangle {
