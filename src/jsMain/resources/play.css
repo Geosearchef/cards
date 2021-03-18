@@ -79,10 +79,10 @@ input {
 }
 
 #actions-overlay {
-    width: 130pt;
+    width: 115pt;
     height: 265pt;
-    margin-left: 15pt;
-    margin-top: 15pt;
+    margin-left: 10pt;
+    margin-top: 10pt;
     padding-top: 10pt;
     background-color: rgba(230,230,230,0.7);
     left: 0;
@@ -107,10 +107,10 @@ input {
 }
 
 #seats-overlay {
-    width: 130pt;
+    width: 115pt;
     height: 265pt;
-    margin-right: 15pt;
-    margin-top: 15pt;
+    margin-right: 10pt;
+    margin-top: 10pt;
     padding-top: 10pt;
     background-color: rgba(230,230,230,0.7);
     right: 0;
