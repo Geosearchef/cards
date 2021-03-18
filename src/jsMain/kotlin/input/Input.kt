@@ -122,7 +122,11 @@ object Input : SceneInput() {
                 val pressedGameObject = Table.renderedGameObjects.findLast { mousePositionTable in it.rect } // sorted by last moved --> search last one
                 if(pressedGameObject != null) {
                     if(!Table.selectedGameObjects.contains(pressedGameObject)) {
-                        Table.selectedGameObjects.clear()
+
+                        if(! event.ctrlKey) {
+                            Table.selectedGameObjects.clear()
+                        }
+
                         if(pressedGameObject !is Stack) {
                             Table.selectedGameObjects.add(pressedGameObject)
                         } else {
