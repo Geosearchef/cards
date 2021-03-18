@@ -1,6 +1,7 @@
 package rendering
 
 import CardSimulatorClient
+import CardSimulatorOptions
 import assets.AssetManager
 import framework.rendering.*
 import framework.scene.Scene.SceneRenderer
@@ -132,7 +133,8 @@ object Rendering : SceneRenderer {
             ctx.roundRect(rect, CARD_OUTLINE_RADIUS)
             ctx.fill()
 
-            AssetManager.get(asset)?.wrappedImage?.let { image ->
+            AssetManager.get(asset)?.let { it ->
+                val image = if(CardSimulatorOptions.MIPMAPPING) it.getMipmap(rect.width.toInt() * 2, rect.height.toInt() * 2) else it.wrappedImage
                 ctx.drawImage(image, rect.pos.x, rect.pos.y, rect.width, rect.height)
             }
 
