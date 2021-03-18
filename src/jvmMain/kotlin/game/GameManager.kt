@@ -41,6 +41,7 @@ object GameManager {
     const val MAX_STACK_DISTANCE_SQUARED = 10.0 * 10.0
     const val PLAYER_ZONE_PADDING = 50.0
     const val PLAYER_ZONE_CARD_PADDING = 6.0
+    const val MAX_SELECTED_OBJECTS_TO_CHECK_PLAYER_HAND = 10
 
     val log = logger()
 
@@ -86,7 +87,7 @@ object GameManager {
                     player.updateCursorPosition(msg.p)
                 }
                 is ClientGameObjectPositionMessage -> {
-                    gameObjects.find { it.id == msg.id }?.let { player.onGameObjectMoved(it, msg.pos) }
+                    gameObjects.find { it.id == msg.id }?.let { player.onGameObjectMoved(it, msg.pos, checkPlayerHands = msg.selectedObjects <= MAX_SELECTED_OBJECTS_TO_CHECK_PLAYER_HAND) }
                 }
                 is ClientFlipObjectMessage -> {
                     gameObjects.filter { msg.objs.contains(it.id) }.forEach { flipGameObject(it, player) }
@@ -167,12 +168,14 @@ object GameManager {
         broadcast(ServerRemoveGameObjectMessage(gameObject.id))
     }
 
-    fun setGameObjectPos(gameObject: GameObject, newPos: Vector) {
+    fun setGameObjectPos(gameObject: GameObject, newPos: Vector, checkPlayerHands: Boolean = true) {
         val oldPos = gameObject.pos.clone()
         gameObject.pos = newPos
         gameObject.lastTouchedOnServer = System.currentTimeMillis()
 
-        gameInfo.playerZones.find { gameObject in it || oldPos in it }?.let { alignGameObjectsIntoPlayerZone(it) }
+        if(checkPlayerHands) { // may be disabled if moving to many cards
+            gameInfo.playerZones.find { gameObject in it || oldPos in it }?.let { alignGameObjectsIntoPlayerZone(it) }
+        }
     }
 
     fun alignGameObjectsIntoPlayerZone(zone: PlayerZone) {

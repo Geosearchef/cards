@@ -90,7 +90,7 @@ object Table {
     }
 
     fun transmitGameObjectPosition(gameObject: GameObject) {
-        WebsocketClient.send(ClientGameObjectPositionMessage(gameObject.pos, gameObject.id))
+        WebsocketClient.send(ClientGameObjectPositionMessage(gameObject.pos, gameObject.id, Table.selectedGameObjects.size))
         lastUpdateByGameObject[gameObject.id] = Util.currentTimeMillis()
     }
 

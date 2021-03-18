@@ -42,16 +42,16 @@ class Player(val username: String, val admin: Boolean, val session: Session) {
         }
     }
 
-    fun onGameObjectMoved(gameObject: GameObject, newPos: Vector) {
+    fun onGameObjectMoved(gameObject: GameObject, newPos: Vector, checkPlayerHands: Boolean) {
         if(seat == null) {
             return
         }
 
         // rate limit only, no retransmit
         if(!lastUpdateByGameObject.containsKey(gameObject.id) || Instant.now().isAfter(lastUpdateByGameObject[gameObject.id]!!.plus(MIN_OBJECT_UPDATE_INTERVAL))) {
-            GameManager.setGameObjectPos(gameObject, newPos)
+            GameManager.setGameObjectPos(gameObject, newPos, checkPlayerHands)
 
-            if(GameManager.gameInfo.playerZones.none {gameObject in it}) {
+            if(GameManager.gameInfo.playerZones.none {gameObject in it} || !checkPlayerHands) {
                 PlayerManager.broadcast(ServerGameObjectPositionMessage(gameObject.pos, gameObject.id, seat!!)) // avoid moving card back to top
             }
             lastUpdateByGameObject[gameObject.id] = Instant.now()

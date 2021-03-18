@@ -46,7 +46,7 @@ data class ServerAddGameObjectMessage(val gameObject: GameObject) : Message()
 data class ServerRemoveGameObjectMessage(val id: Long) : Message()
 
 @Serializable @SerialName("clObjPos")
-data class ClientGameObjectPositionMessage(val pos: Vector, val id: Long) : Message()
+data class ClientGameObjectPositionMessage(val pos: Vector, val id: Long, @SerialName("sel") val selectedObjects: Int) : Message()
 @Serializable @SerialName("seObjPos")
 data class ServerGameObjectPositionMessage(val pos: Vector, val id: Long, val seat: Int) : Message()
 
