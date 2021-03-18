@@ -6,6 +6,8 @@ import ClientUnstackGameObjectMessage
 import framework.input.GenericInput.KEY_D
 import framework.input.GenericInput.KEY_F
 import framework.input.GenericInput.KEY_G
+import framework.input.GenericInput.KEY_MINUS
+import framework.input.GenericInput.KEY_PLUS
 import framework.input.GenericInput.KEY_S
 import framework.scene.SceneInput
 import game.Game
@@ -194,7 +196,6 @@ object Input : SceneInput() {
         Table.scale = minOf(MAX_ZOOM, maxOf(MIN_ZOOM, Table.scale))
 
         Table.offset = (mousePosition / Table.scale) - mousePositionTable
-        CardSimulatorClient.requestRender()
     }
 
     override fun onTouchMove(event: TouchEvent, isOnUI: Boolean) {
@@ -251,6 +252,13 @@ object Input : SceneInput() {
 
         if (event.keyCode == KEY_D) {
             Game.onDealRequested()
+        }
+
+        if (event.keyCode == KEY_PLUS) {
+            Table.scale *= ZOOM_FACTOR
+        }
+        if (event.keyCode == KEY_MINUS) {
+            Table.scale /= ZOOM_FACTOR
         }
     }
 

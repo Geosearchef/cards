@@ -19,6 +19,8 @@ object GenericInput : SceneInput() {
     const val KEY_F = 70
     const val KEY_G = 71
     const val KEY_S = 83
+    const val KEY_PLUS = 171
+    const val KEY_MINUS = 173
 
     private fun onMouseMove(event: Event) {
         if(event !is MouseEvent) throw RuntimeException("Event of wrong type")
