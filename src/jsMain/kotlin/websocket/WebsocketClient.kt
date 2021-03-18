@@ -78,7 +78,7 @@ object WebsocketClient {
     }
 
     fun init() {
-        val websocketUrl = "ws://${window.location.hostname}:${window.location.port}${CardSimulatorOptions.WEBSOCKET_ROUTE}"
+        val websocketUrl = "ws${if(window.location.protocol == "https:") "s" else ""}://${window.location.hostname}:${window.location.port}${CardSimulatorOptions.WEBSOCKET_ROUTE}"
         console.log("Connecting to web socket at $websocketUrl")
         socket = WebSocket(websocketUrl)
 
