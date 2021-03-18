@@ -2,6 +2,7 @@ package game
 
 import ClientAdminDeleteAllGameObjectsMessage
 import ClientAdminDeleteGameObjectsMessage
+import ClientAdminSpawnDeckMessage
 import ClientCursorPositionMessage
 import ClientDealStackMessage
 import ClientFlipObjectMessage
@@ -59,14 +60,15 @@ object GameManager {
             PlayerZone(2, Rectangle(300.0, 250.0, 400.0, 160.0)),
             PlayerZone(3, Rectangle(-700.0, -350.0, 400.0, 160.0)),
             PlayerZone(4, Rectangle(-200.0, -350.0, 400.0, 160.0)),
-        )
+        ),
+        Deck.values().map { it.identifier }
     )
     val gameObjects: MutableList<GameObject> = ArrayList()
 
     // create test objects
     fun init() {
         TaskProcessor.addTask {
-            Deck.ABLUXXEN.spawn()
+            Deck.DEMO.spawn()
         }
     }
 
@@ -129,6 +131,10 @@ object GameManager {
                 is ClientAdminDeleteAllGameObjectsMessage -> {
                     println("DELETING ALL GAME OBJECTS as requested by ${player.username} from ${player.session.getRemoteHostAddress()}")
                     ArrayList(gameObjects).forEach { removeGameObject(it) }
+                }
+                is ClientAdminSpawnDeckMessage -> {
+                    println("Spawning deck ${msg.deck} as requested by ${player.username}")
+                    Deck.values().find { it.identifier == msg.deck }?.spawn()
                 }
             }
         }

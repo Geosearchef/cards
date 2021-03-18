@@ -77,3 +77,6 @@ data class ClientDealStackMessage(val stackId: Long) : Message()
 data class ClientAdminDeleteGameObjectsMessage(val objs: List<Long>) : Message()
 @Serializable @SerialName("clDeleteAll")
 class ClientAdminDeleteAllGameObjectsMessage() : Message()
+
+@Serializable
+data class ClientAdminSpawnDeckMessage(val deck: String) : Message()

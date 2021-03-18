@@ -3,6 +3,7 @@ package game
 import CardSimulatorClient
 import ClientAdminDeleteAllGameObjectsMessage
 import ClientAdminDeleteGameObjectsMessage
+import ClientAdminSpawnDeckMessage
 import ClientDealStackMessage
 import ClientFlipObjectMessage
 import ClientGroupObjectsMessage
@@ -102,7 +103,7 @@ object Game {
             }
 
             is ServerGameObjectPositionMessage -> {
-                console.log("Got position ${msg.pos} for ${msg.id}")
+//                console.log("Got position ${msg.pos} for ${msg.id}")
                 Table.gameObjects.find { it.id == msg.id }?.let { Table.onServerGameObjectPosition(it, msg.pos) }
             }
 
@@ -178,6 +179,10 @@ object Game {
         }
     }
 
+    fun onSpawnDeckRequested(deck: String) {
+        WebsocketClient.send(ClientAdminSpawnDeckMessage(deck))
+    }
+
     fun onGameObjectsDeleteRequested() {
         if(Table.selectedGameObjects.isNotEmpty()) {
             WebsocketClient.send(ClientAdminDeleteGameObjectsMessage(Table.selectedGameObjects.map{ it.id }))
@@ -214,6 +219,14 @@ object Game {
                     val body = (document.getElementById("body") as HTMLBodyElement)
                     body.requestFullscreen()
                     fullscreen = true
+                }
+            }
+            (document.getElementById("spawn-button") as HTMLInputElement).onclick = {
+                val deck = window.prompt("Which deck do you want to spawn? (${gameInfo.availableDecks.joinToString(", ")})")
+                if(deck == null) {
+                    window.alert("$deck is not a valid deck!")
+                } else {
+                    onSpawnDeckRequested(deck)
                 }
             }
             (document.getElementById("delete-button") as HTMLInputElement).onclick = {

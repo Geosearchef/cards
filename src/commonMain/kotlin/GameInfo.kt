@@ -4,7 +4,7 @@ import util.math.Rectangle
 import util.math.Vector
 
 @Serializable
-data class GameInfo(val seats: Array<SeatInfo>, val playerZones: Array<PlayerZone>)
+data class GameInfo(val seats: Array<SeatInfo>, val playerZones: Array<PlayerZone>, val availableDecks: List<String>)
 @Serializable
 data class SeatInfo(val id: Int, val color: String)
 @Serializable
