@@ -16,7 +16,15 @@ import kotlin.math.pow
 
 object Table {
 
-    private const val GAME_OBJECT_UPDATE_INTERVAL_MS = 16
+    private val adjustedGameObjectUpdateInterval: Int get() {
+        if(selectedGameObjects.size > 10) {
+            return 100
+        } else if(selectedGameObjects.size > 30) {
+            return 300
+        } else {
+            return 16
+        }
+    }
 
     var offset = Vector(0.0, 0.0)
     var scale = 2.0
@@ -67,7 +75,9 @@ object Table {
     // client sided
     var lastUpdateByGameObject: MutableMap<Long, Long> = HashMap()
     fun onGameObjectMoved(gameObject: GameObject) {
-        if(lastUpdateByGameObject[gameObject.id] == null || lastUpdateByGameObject[gameObject.id]!! + GAME_OBJECT_UPDATE_INTERVAL_MS < Util.currentTimeMillis()) {
+
+
+        if(lastUpdateByGameObject[gameObject.id] == null || lastUpdateByGameObject[gameObject.id]!! + adjustedGameObjectUpdateInterval < Util.currentTimeMillis()) {
             transmitGameObjectPosition(gameObject)
         } else {
             val newPos = gameObject.pos
@@ -75,7 +85,7 @@ object Table {
                 if(gameObject.pos == newPos) {
                     transmitGameObjectPosition(gameObject)
                 }
-            }, GAME_OBJECT_UPDATE_INTERVAL_MS)
+            }, adjustedGameObjectUpdateInterval)
         }
     }
 

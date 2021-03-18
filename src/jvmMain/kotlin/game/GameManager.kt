@@ -23,7 +23,6 @@ import ServerRemoveGameObjectMessage
 import ServerSetGameObjectsFlippedMessage
 import ServerStackInfoMessage
 import game.TaskProcessor.verifyTaskThread
-import game.objects.Card
 import game.objects.GameObject
 import game.objects.Stack
 import game.objects.StackableGameObject
@@ -66,11 +65,7 @@ object GameManager {
     // create test objects
     fun init() {
         TaskProcessor.addTask {
-            val cardSize = Vector(57.0, 57.0 * (1060.0 / 680.0))  // 57.0 x 88.8
-
-            for(i in 1..13) {
-                addGameObject(Card(Vector(i * (cardSize.x + 15.0) - 500, 0.0), cardSize, "CardA$i.png", "CardAB.png"))
-            }
+            Deck.ABLUXXEN.spawn()
         }
     }
 
