@@ -57,6 +57,40 @@ enum class Deck(val identifier: String) {
                 )
             )
         }
+    },
+    WIZARD("wizard") {
+        override fun spawn() {
+            val cardSize = Vector(57.0, 57.0 * (1060.0 / 680.0))  // 57.0 x 88.8
+
+            listOf("Y", "R", "G", "B").forEachIndexed { k, color ->
+                GameManager.addGameObject(
+                    Card(
+                        Vector(-1 * (cardSize.x + 0.0) - 500, k * cardSize.y - 170),
+                        cardSize,
+                        "CardW_${color}Z.jpg",
+                        "CardW_B.png"
+                    )
+                )
+                GameManager.addGameObject(
+                    Card(
+                        Vector(-0 * (cardSize.x + 0.0) - 500, k * cardSize.y - 170),
+                        cardSize,
+                        "CardW_${color}N.jpg",
+                        "CardW_B.png"
+                    )
+                )
+                for(i in 13 downTo 1) {
+                    GameManager.addGameObject(
+                        Card(
+                            Vector(i * (cardSize.x + 0.0) - 500, k * cardSize.y - 170),
+                            cardSize,
+                            "CardW_${color}${i}.jpg",
+                            "CardW_B.png"
+                        )
+                    )
+                }
+            }
+        }
     };
 
     open fun spawn() {}
