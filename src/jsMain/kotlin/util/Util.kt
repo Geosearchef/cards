@@ -25,6 +25,17 @@ actual object Util {
         resizedImage.src = canvas.toDataURL("image/png")
         return resizedImage
     }
+
+    var isChromiumCached: Boolean? = null
+    fun isChromium(): Boolean {
+        if(isChromiumCached == null) {
+            isChromiumCached = js("!!window.chrome")
+            if(isChromiumCached != false) {
+                console.log("Chromium detected, using self calculated event movement")
+            }
+        }
+        return isChromiumCached ?: true
+    }
 }
 
 fun Double.toDecimals(n: Int): String {

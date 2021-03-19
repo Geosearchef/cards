@@ -5,6 +5,7 @@ import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.MouseEvent
 import org.w3c.dom.events.WheelEvent
 import org.w3c.dom.get
+import util.Util
 import util.math.Vector
 
 abstract class SceneInput {
@@ -13,8 +14,14 @@ abstract class SceneInput {
     var isOnUI: Boolean = false
 
     fun sealedOnMouseMove(event: MouseEvent) {
+        val oldMousePosition = mousePosition
+
         mousePosition = Vector(event.offsetX, event.offsetY)
-        mouseMovement = Vector(js("event.movementX") as Double, js("event.movementY") as Double) // not supported by internet explorer, therefore not exposed
+        if(Util.isChromium()) {
+            mouseMovement = mousePosition - oldMousePosition // chromium returns absolute on screen mouse movement when webpage is zoomed or dpi scaled
+        } else {
+            mouseMovement = Vector(js("event.movementX") as Double, js("event.movementY") as Double) // not supported by internet explorer, therefore not exposed
+        }
         isOnUI = SceneManager.currentScene.uiManager.getUI().isMouseEventOnUI(mousePosition)
         onMouseMove(event, isOnUI)
     }
