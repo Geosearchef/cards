@@ -1,6 +1,7 @@
 package input
 
 import CardSimulatorClient
+import CardsUIManager
 import ClientGameObjectReleasedMessage
 import ClientUnstackGameObjectMessage
 import framework.input.GenericInput.KEY_ALT
@@ -63,6 +64,8 @@ object Input : SceneInput() {
 
 
     override fun onMouseMove(event: MouseEvent, isOnUI: Boolean) {
+        CardsUIManager.uiInstance.onMouseMove(mousePosition)
+
         mousePositionTable = (mousePosition / Table.scale) - Table.offset
 
         if(isTableMoving) {

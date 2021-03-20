@@ -1,6 +1,7 @@
 package game
 
 import CardSimulatorClient
+import CardsUI
 import ClientAdminDeleteAllGameObjectsMessage
 import ClientAdminDeleteGameObjectsMessage
 import ClientAdminSpawnDeckMessage
@@ -205,6 +206,7 @@ object Game {
             gameInfo.seats.find { it.id == entry.key }
         }
     }
+
     //TODO: extract to UI
     var fullscreen = false
 
@@ -227,6 +229,7 @@ object Game {
                     fullscreen = true
                 }
             }
+            (document.getElementById("hide-button") as HTMLInputElement).onclick = { (CardSimulatorClient.DefaultScene.uiManager.getUI() as CardsUI).onHideButtonPressed() }
             (document.getElementById("spawn-button") as HTMLInputElement).onclick = {
                 val deck = window.prompt("${I18n.get("spawn-deck-confirm")} (${gameInfo.availableDecks.joinToString(", ")})")
                 if(deck == null) {

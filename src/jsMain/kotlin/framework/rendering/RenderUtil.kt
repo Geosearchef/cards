@@ -17,6 +17,7 @@ fun HTMLCanvasElement.resizeCanvas() {
         this.width = displayWidth
         this.height = displayHeight
 
+        CardSimulatorClient.DefaultScene.uiManager.regenerateUI(this.width, this.height)
         CardSimulatorClient.requestRender()
         println("Resized canvas to $displayWidth x $displayHeight")
     }

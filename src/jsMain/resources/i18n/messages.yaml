@@ -7,6 +7,8 @@ shuffle: Shuffle (R)
 deal: Deal (D)
 sort: Sort (S)
 fullscreen: Fullscreen
+hide-ui: Hide
+show-ui: Show
 join-seat: < Join >
 spawn: Spawn
 delete-obj: Delete

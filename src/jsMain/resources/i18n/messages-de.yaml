@@ -7,6 +7,8 @@ shuffle: Mischen (R)
 deal: Austeilen (D)
 sort: Sortieren (S)
 fullscreen: Vollbild
+hide-ui: Ausblenden
+show-ui: Anzeigen
 join-seat: < Beitreten >
 spawn: Erstellen
 delete-obj: Löschen

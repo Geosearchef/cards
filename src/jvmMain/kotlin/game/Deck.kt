@@ -24,8 +24,8 @@ enum class Deck(val identifier: String) {
         override fun spawn() {
             val cardSize = Vector(57.0, 57.0 * (1060.0 / 680.0))  // 57.0 x 88.8
 
-            for(k in 0..7) {
-                for(i in 1..13) {
+            for(i in 1..13) {
+                for(k in 0..7) {
                     GameManager.addGameObject(
                         Card(
                             Vector(i * (cardSize.x + 15.0) - 500, k * 15.0),
