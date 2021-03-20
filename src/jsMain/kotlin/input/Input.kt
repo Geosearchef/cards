@@ -94,8 +94,9 @@ object Input : SceneInput() {
             val passedTime = Util.currentTimeMillis() - grabStartTime
             if ((grabStartPosition - mousePositionTable).length() > MAX_STACK_GRAB_DISTANCE
                 && passedTime < STACK_GRAB_DELAY_MS
-                && Table.selectedGameObjects.isEmpty()) {
+                && Table.selectedGameObjects.none { it != grabbedGameObject}) {
                 grabbedGameObject.topObject?.let {
+                    Table.selectedGameObjects.clear() // remove stack if currently selected
                     Table.selectedGameObjects.add(it)
                     Input.grabbedGameObject = it
                     it.pos = mousePositionTable - grabOffset
