@@ -1,5 +1,5 @@
 
-window.onload = (event) => {
+addOnLoadCallback((event) => {
     const urlParams = new URLSearchParams(window.location.search);
     const usernameParam = urlParams.get("username");
     const codeParam = urlParams.get("code");
@@ -12,5 +12,4 @@ window.onload = (event) => {
         codeTextfield.value = codeParam;
         codeTextfield.style = "display: none; margin-top: 0pt !important; margin-bottom: 0pt !important;";
     }
-};
-
+});

@@ -29,6 +29,7 @@ import kotlinx.browser.window
 import org.w3c.dom.HTMLBodyElement
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
+import util.I18n
 import util.Util
 import websocket.WebsocketClient
 
@@ -204,7 +205,7 @@ object Game {
     //TODO: extract to UI
     var fullscreen = false
     fun init() {
-        window.onload = {
+        val onloadFunction = {
             (document.getElementById("flip-button") as HTMLInputElement).onclick = { Game.onFlipRequested() }
             (document.getElementById("group-button") as HTMLInputElement).onclick = { Game.onGroupRequested() }
             (document.getElementById("shuffle-button") as HTMLInputElement).onclick = { Game.onShuffleRequested() }
@@ -222,26 +223,28 @@ object Game {
                 }
             }
             (document.getElementById("spawn-button") as HTMLInputElement).onclick = {
-                val deck = window.prompt("Which deck do you want to spawn? (${gameInfo.availableDecks.joinToString(", ")})")
+                val deck = window.prompt("${I18n.get("spawn-deck-confirm")} (${gameInfo.availableDecks.joinToString(", ")})")
                 if(deck == null) {
-                    window.alert("$deck is not a valid deck!")
+                    window.alert("$deck ${I18n.get("invalid-deck")}")
                 } else {
                     onSpawnDeckRequested(deck)
                 }
             }
             (document.getElementById("delete-button") as HTMLInputElement).onclick = {
-                if(window.confirm(message = "Delete game objects ${Table.selectedGameObjects.map { it.id }} ?")) {
+                if(window.confirm(message = "${I18n.get("delete-obj-confirm")} ${Table.selectedGameObjects.map { it.id }} ?")) {
                     Game.onGameObjectsDeleteRequested()
                 }
             }
             (document.getElementById("deleteall-button") as HTMLInputElement).onclick = {
-                if(window.confirm(message = "You are about to DELETE ALL game objects. Are you sure?")) {
+                if(window.confirm(message = I18n.get("delete-all-confirm"))) {
                     Game.onAllGameObjectsDeleteRequested()
                 }
             }
 
             "".asDynamic()
         }
+
+        js("addOnLoadCallback(onloadFunction)") // don't hook onload directly as i18n also uses it
     }
 
 }

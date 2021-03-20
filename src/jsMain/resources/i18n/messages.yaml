@@ -1,0 +1,16 @@
+username: username
+join: Join
+code: code
+flip: Flip (F)
+group: Group (G)
+shuffle: Shuffle (S)
+deal: Deal (D)
+fullscreen: Fullscreen
+join-seat: < Join >
+spawn: Spawn
+delete-obj: Delete
+delete-all: Delete all
+spawn-deck-confirm: Which deck do you want to spawn?
+invalid-deck: is not a valid deck!
+delete-obj-confirm: Delete game objects
+delete-all-confirm: You are about to DELETE ALL game objects. Are you sure?

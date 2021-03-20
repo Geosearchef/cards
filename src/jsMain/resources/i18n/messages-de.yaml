@@ -1,0 +1,16 @@
+username: Benutzername
+join: Beitreten
+code: Code
+flip: Flip (F)
+group: Gruppieren (G)
+shuffle: Mischen (S)
+deal: Austeilen (D)
+fullscreen: Vollbild
+join-seat: < Beitreten >
+spawn: Erstellen
+delete-obj: Löschen
+delete-all: Alle löschen
+spawn-deck-confirm: Welches Deck möchtest du erstellen?
+invalid-deck: ist kein gültiges Deck!
+delete-obj-confirm: Folgende Spielobjekte löschen
+delete-all-confirm: Du bist dabei ALLE Spielobjekte ZU LÖSCHEN. Bist du dir da ganz sicher?
