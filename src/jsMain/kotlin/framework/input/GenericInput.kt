@@ -14,6 +14,7 @@ import org.w3c.dom.events.WheelEvent
  * Input for all framework.scene
  */
 object GenericInput : SceneInput() {
+    const val KEY_ALT = 18
     const val KEY_A = 65
     const val KEY_D = 68
     const val KEY_F = 70

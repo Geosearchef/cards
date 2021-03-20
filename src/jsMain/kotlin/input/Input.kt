@@ -3,6 +3,7 @@ package input
 import CardSimulatorClient
 import ClientGameObjectReleasedMessage
 import ClientUnstackGameObjectMessage
+import framework.input.GenericInput.KEY_ALT
 import framework.input.GenericInput.KEY_D
 import framework.input.GenericInput.KEY_F
 import framework.input.GenericInput.KEY_G
@@ -55,6 +56,8 @@ object Input : SceneInput() {
     var grabStartPosition: Vector = Vector()
     var grabStartTime: Long = 0
     var stackGrabbed: Boolean = false
+
+    var altDown: Boolean = false
 
 
     override fun onMouseMove(event: MouseEvent, isOnUI: Boolean) {
@@ -264,9 +267,19 @@ object Input : SceneInput() {
         if (event.keyCode == KEY_MINUS) {
             Table.scale /= ZOOM_FACTOR
         }
+        if(event.keyCode == KEY_ALT) {
+            altDown = true
+            event.preventDefault()
+        }
     }
 
     override fun onKeyUp(event: KeyboardEvent) {
-        super.onKeyUp(event)
+
+        if(event.keyCode == KEY_ALT) {
+            altDown = false
+            event.preventDefault()
+        }
     }
+
+    fun getObjectUnderMouse() = Table.gameObjects.find { mousePositionTable in it.rect }
 }

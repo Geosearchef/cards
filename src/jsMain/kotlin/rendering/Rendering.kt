@@ -8,6 +8,7 @@ import framework.scene.Scene.SceneRenderer
 import game.Game
 import game.Table
 import game.objects.Card
+import game.objects.GameObject
 import game.objects.Stack
 import input.Input
 import org.w3c.dom.*
@@ -25,6 +26,7 @@ object Rendering : SceneRenderer {
     private const val STACK_COUNT_OUTLINE_RADIUS = 4.0
     private val STACK_COUNT_SIZE = Vector(20.0, 20.0)
     private const val PLAYER_ZONE_CORNER_RADIUS = 10.0
+    private const val CARD_PEEK_SCALE = 3.0
 
     var screenRectOnTable = Rectangle(0.0,0.0,10.0,10.0)
     var width = 0
@@ -67,6 +69,8 @@ object Rendering : SceneRenderer {
         renderPlayerCursors(ctx)
         renderSelectionArea(ctx)
 
+        renderCardPeek(ctx)
+
         ctx.setIdentityMatrix()
     }
 
@@ -93,7 +97,7 @@ object Rendering : SceneRenderer {
         } // recently moved cards are at the top
 
         Table.renderedGameObjects.forEach { gameObject ->
-            val inOtherPlayerZone = Game.gameInfo.playerZones.filterIndexed { index, playerZone -> index != Game.ownSeat && gameObject in playerZone }.any()
+            val inOtherPlayerZone = inOtherPlayerZone(gameObject)
 
             if(gameObject.rect.corners.none { it in screenRectOnTable }) {
                 return@forEach
@@ -112,6 +116,10 @@ object Rendering : SceneRenderer {
             }
         }
     }
+
+    private fun inOtherPlayerZone(gameObject: GameObject) =
+        Game.gameInfo.playerZones.filterIndexed { index, playerZone -> index != Game.ownSeat && gameObject in playerZone }
+            .any()
 
     private fun renderStack(ctx: CanvasRenderingContext2D, rect: Rectangle, asset: String?, selected: Boolean, stackedObjectsCount: Int) {
         renderCard(ctx, rect, asset, selected)
@@ -142,7 +150,7 @@ object Rendering : SceneRenderer {
         ctx.textBaseline = CanvasTextBaseline.BOTTOM;
     }
 
-    private fun renderCard(ctx: CanvasRenderingContext2D, rect: Rectangle, asset: String?, selected: Boolean) {
+    private fun renderCard(ctx: CanvasRenderingContext2D, rect: Rectangle, asset: String?, selected: Boolean, peek: Boolean = false) {
         if (asset != null) {
             // white background
             ctx.color("#FFFFFF")
@@ -155,8 +163,8 @@ object Rendering : SceneRenderer {
             }
 
             ctx.color(if (selected) CARD_OUTLINE_COLOR_SELECTED else CARD_OUTLINE_COLOR)
-            ctx.lineWidth = CARD_OUTLINE_WIDTH
-            ctx.roundRect(rect, CARD_OUTLINE_RADIUS)
+            ctx.lineWidth = CARD_OUTLINE_WIDTH * (if(peek) CARD_PEEK_SCALE else 1.0)
+            ctx.roundRect(rect, CARD_OUTLINE_RADIUS * (if(peek) CARD_PEEK_SCALE else 1.0))
             ctx.stroke()
             ctx.lineWidth = 1.0
         } else {
@@ -205,5 +213,17 @@ object Rendering : SceneRenderer {
             ctx.globalAlpha = 1.0
         }
 
+    }
+
+    private fun renderCardPeek(ctx: CanvasRenderingContext2D) {
+        if(! Input.altDown) {
+            return
+        }
+        (Input.getObjectUnderMouse() as? Card)?.let {
+            val width = it.rect.width * CARD_PEEK_SCALE
+            val height = it.rect.height * CARD_PEEK_SCALE
+            renderCard(ctx, Rectangle(it.center - Vector(width, height) / 2.0, width, height), it.getUsedAsset(
+                inOtherPlayerZone(it)), false, peek = true)
+        }
     }
 }
