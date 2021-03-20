@@ -3,8 +3,9 @@ join: Join
 code: code
 flip: Flip (F)
 group: Group (G)
-shuffle: Shuffle (S)
+shuffle: Shuffle (R)
 deal: Deal (D)
+sort: Sort (S)
 fullscreen: Fullscreen
 join-seat: < Join >
 spawn: Spawn

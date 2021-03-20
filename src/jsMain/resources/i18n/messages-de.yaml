@@ -3,8 +3,9 @@ join: Beitreten
 code: Code
 flip: Flip (F)
 group: Gruppieren (G)
-shuffle: Mischen (S)
+shuffle: Mischen (R)
 deal: Austeilen (D)
+sort: Sortieren (S)
 fullscreen: Vollbild
 join-seat: < Beitreten >
 spawn: Erstellen

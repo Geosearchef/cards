@@ -66,12 +66,12 @@ data class ClientUnstackGameObjectMessage(val id: Long) : Message()
 
 @Serializable @SerialName("clGroupObjs")
 data class ClientGroupObjectsMessage(val objs: Array<Long>) : Message()
-
 @Serializable @SerialName("clShuffleStacks")
 data class ClientShuffleStacksMessage(val objs: Array<Long>) : Message()
-
 @Serializable @SerialName("clDealStack")
 data class ClientDealStackMessage(val stackId: Long) : Message()
+@Serializable @SerialName("clSortPlayerZone")
+class ClientSortPlayerZoneMessage() : Message()
 
 @Serializable @SerialName("clDeleteObj")
 data class ClientAdminDeleteGameObjectsMessage(val objs: List<Long>) : Message()

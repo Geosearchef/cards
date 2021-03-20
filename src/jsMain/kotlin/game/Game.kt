@@ -9,6 +9,7 @@ import ClientFlipObjectMessage
 import ClientGroupObjectsMessage
 import ClientJoinSeatMessage
 import ClientShuffleStacksMessage
+import ClientSortPlayerZoneMessage
 import GameInfo
 import Message
 import SeatInfo
@@ -175,9 +176,12 @@ object Game {
         if (Table.selectedGameObjects.isNotEmpty()) {
             WebsocketClient.send(ClientFlipObjectMessage(Table.selectedGameObjects
                 .filter { (it as? StackableGameObject)?.stack == null }.map { it.id }.toTypedArray()
-            )
-            )
+            ))
         }
+    }
+
+    fun onSortRequested() {
+        WebsocketClient.send(ClientSortPlayerZoneMessage())
     }
 
     fun onSpawnDeckRequested(deck: String) {
@@ -201,15 +205,16 @@ object Game {
             gameInfo.seats.find { it.id == entry.key }
         }
     }
-
     //TODO: extract to UI
     var fullscreen = false
+
     fun init() {
         val onloadFunction = {
             (document.getElementById("flip-button") as HTMLInputElement).onclick = { Game.onFlipRequested() }
             (document.getElementById("group-button") as HTMLInputElement).onclick = { Game.onGroupRequested() }
             (document.getElementById("shuffle-button") as HTMLInputElement).onclick = { Game.onShuffleRequested() }
             (document.getElementById("deal-button") as HTMLInputElement).onclick = { Game.onDealRequested() }
+            (document.getElementById("sort-button") as HTMLInputElement).onclick = { Game.onSortRequested() }
             (document.getElementById("fullscreen-button") as HTMLInputElement).onclick = {
                 if(fullscreen) {
                     console.log("Exiting fullscreen")

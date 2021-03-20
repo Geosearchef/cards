@@ -11,6 +11,7 @@ import ClientGameObjectReleasedMessage
 import ClientGroupObjectsMessage
 import ClientJoinSeatMessage
 import ClientShuffleStacksMessage
+import ClientSortPlayerZoneMessage
 import ClientUnstackGameObjectMessage
 import GameInfo
 import Message
@@ -117,6 +118,9 @@ object GameManager {
                         dealFromStack(it)
                     }
                 }
+                is ClientSortPlayerZoneMessage -> {
+                    player.seat?.let { seat -> alignGameObjectsIntoPlayerZone(gameInfo.playerZones[seat], sortById = true) }
+                }
             }
 
             if(! player.admin) {
@@ -184,8 +188,9 @@ object GameManager {
         }
     }
 
-    fun alignGameObjectsIntoPlayerZone(zone: PlayerZone) {
-        val gameObjectsInZone = gameObjects.filter { (it as? StackableGameObject)?.stack == null }.filter { it in zone }.sortedBy { it.pos.x }
+    fun alignGameObjectsIntoPlayerZone(zone: PlayerZone, sortById: Boolean = false) {
+        val gameObjectsInZoneUnsorted = gameObjects.filter { (it as? StackableGameObject)?.stack == null }.filter { it in zone }
+        val gameObjectsInZone = gameObjectsInZoneUnsorted.sortedBy { if(sortById) it.id.toDouble() else it.pos.x }
         if(gameObjectsInZone.isEmpty()) {
             return
         }

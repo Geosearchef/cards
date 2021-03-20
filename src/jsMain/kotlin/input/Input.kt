@@ -9,12 +9,14 @@ import framework.input.GenericInput.KEY_F
 import framework.input.GenericInput.KEY_G
 import framework.input.GenericInput.KEY_MINUS
 import framework.input.GenericInput.KEY_PLUS
+import framework.input.GenericInput.KEY_R
 import framework.input.GenericInput.KEY_S
 import framework.scene.SceneInput
 import game.Game
 import game.Table
 import game.objects.GameObject
 import game.objects.Stack
+import game.objects.StackableGameObject
 import kotlinx.browser.window
 import org.w3c.dom.TouchEvent
 import org.w3c.dom.events.KeyboardEvent
@@ -254,12 +256,16 @@ object Input : SceneInput() {
             Game.onGroupRequested()
         }
 
-        if (event.keyCode == KEY_S) {
+        if (event.keyCode == KEY_R) {
             Game.onShuffleRequested()
         }
 
         if (event.keyCode == KEY_D) {
             Game.onDealRequested()
+        }
+
+        if(event.keyCode == KEY_S) {
+            Game.onSortRequested()
         }
 
         if (event.keyCode == KEY_PLUS) {
@@ -282,5 +288,5 @@ object Input : SceneInput() {
         }
     }
 
-    fun getObjectUnderMouse() = Table.gameObjects.find { mousePositionTable in it.rect }
+    fun getObjectUnderMouse() = Table.gameObjects.lastOrNull { (it as? StackableGameObject)?.stack == null && mousePositionTable in it.rect }
 }

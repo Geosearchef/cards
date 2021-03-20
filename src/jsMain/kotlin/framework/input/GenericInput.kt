@@ -19,6 +19,7 @@ object GenericInput : SceneInput() {
     const val KEY_D = 68
     const val KEY_F = 70
     const val KEY_G = 71
+    const val KEY_R = 82
     const val KEY_S = 83
     const val KEY_PLUS = 171
     const val KEY_MINUS = 173

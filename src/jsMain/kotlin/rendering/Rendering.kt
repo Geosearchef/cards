@@ -26,7 +26,7 @@ object Rendering : SceneRenderer {
     private const val STACK_COUNT_OUTLINE_RADIUS = 4.0
     private val STACK_COUNT_SIZE = Vector(20.0, 20.0)
     private const val PLAYER_ZONE_CORNER_RADIUS = 10.0
-    private const val CARD_PEEK_SCALE = 3.0
+    private const val CARD_PEEK_SCALE = 2.5
 
     var screenRectOnTable = Rectangle(0.0,0.0,10.0,10.0)
     var width = 0
