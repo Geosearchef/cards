@@ -175,10 +175,15 @@ object Rendering : SceneRenderer {
 
     private fun renderPlayerZones(ctx: CanvasRenderingContext2D) {
         Game.gameInfo.playerZones.forEach { playerZone ->
+            val shouldBeHidden = !Game.playersBySeat.entries.isEmpty() && Game.playersBySeat[playerZone.seatId] == null
+            if(shouldBeHidden) {
+                return@forEach
+            }
+
 //            ctx.globalAlpha = 0.4
             ctx.lineWidth = 2.0
             val playerColor =
-                if(! Game.playersBySeat.entries.isEmpty() && Game.playersBySeat[playerZone.seatId] == null)
+                if(shouldBeHidden)
                     "#CCCCCC"
                 else
                     Game.gameInfo.seats[playerZone.seatId].color
