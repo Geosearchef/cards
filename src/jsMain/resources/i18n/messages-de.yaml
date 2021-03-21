@@ -13,10 +13,13 @@ hide-ui: Menü
 show-ui: Menü
 join-seat: < Beitreten >
 spawn: ➕
+respawn: 🔄
 delete-obj: ❌
 delete-all: 🗑️
-spawn-deck-confirm: Welches Deck möchtest du erstellen?
+spawn-deck-confirm: Welches Deck möchtest du laden?
 invalid-deck: ist kein gültiges Deck!
+no-deck-spawned: Du musst erst ein Deck laden!
+respawn-deck-confirm: Bist du dir sicher, dass du alle Objekte löschen möchtest um das Deck neu zu laden -
 delete-obj-confirm: Folgende Spielobjekte löschen
 delete-all-confirm: Du bist dabei ALLE Spielobjekte ZU LÖSCHEN. Bist du dir da ganz sicher?
 player-note: Spielernotiz

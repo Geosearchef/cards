@@ -209,8 +209,17 @@ object Game {
         WebsocketClient.send(ClientSortPlayerZoneMessage())
     }
 
+    var lastSpawnRequest: String? = null
     fun onSpawnDeckRequested(deck: String) {
         WebsocketClient.send(ClientAdminSpawnDeckMessage(deck))
+        lastSpawnRequest = deck
+    }
+
+    fun onRespawnDeckRequest() {
+        lastSpawnRequest?.let {
+            WebsocketClient.send(ClientAdminDeleteAllGameObjectsMessage())
+            WebsocketClient.send(ClientAdminSpawnDeckMessage(it))
+        }
     }
 
     fun onGameObjectsDeleteRequested() {
@@ -276,6 +285,15 @@ object Game {
                     window.alert("$deck ${I18n.get("invalid-deck")}")
                 } else {
                     onSpawnDeckRequested(deck)
+                }
+            }
+            (document.getElementById("respawn-button") as HTMLInputElement).onclick = {
+                if(lastSpawnRequest == null) {
+                    window.alert(I18n.get("no-deck-spawned"))
+                } else {
+                    if(window.confirm(message = I18n.get("respawn-deck-confirm"))) {
+                        onRespawnDeckRequest()
+                    }
                 }
             }
             (document.getElementById("delete-button") as HTMLInputElement).onclick = {

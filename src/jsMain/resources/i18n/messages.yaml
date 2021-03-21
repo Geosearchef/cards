@@ -13,10 +13,13 @@ hide-ui: Hide menu
 show-ui: Show menu
 join-seat: < Join >
 spawn: ➕
+respawn: 🔄
 delete-obj: ❌
 delete-all: 🗑️
 spawn-deck-confirm: Which deck do you want to spawn?
 invalid-deck: is not a valid deck!
+no-deck-spawned: You have to spawn a deck first!
+respawn-deck-confirm: Are you sure you want to DELETE ALL objects and respawn
 delete-obj-confirm: Delete game objects
 delete-all-confirm: You are about to DELETE ALL game objects. Are you sure?
 player-note: player note

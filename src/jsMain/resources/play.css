@@ -106,7 +106,7 @@ input {
     width: 80pt;
 }
 
-#admin-actions-list > input {
+#admin-actions-list > div > input {
     background: #e7b1b1;
 }
 
