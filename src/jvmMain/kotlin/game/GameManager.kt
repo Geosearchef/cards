@@ -10,8 +10,8 @@ import ClientGameObjectPositionMessage
 import ClientGameObjectReleasedMessage
 import ClientGroupObjectsMessage
 import ClientJoinSeatMessage
-import ClientPlayerNoteUpdate
-import ClientPublicNoteUpdate
+import ClientPlayerNoteUpdateMessage
+import ClientPublicNoteUpdateMessage
 import ClientShuffleStacksMessage
 import ClientSortPlayerZoneMessage
 import ClientUnstackGameObjectMessage
@@ -23,11 +23,12 @@ import ServerAddGameObjectMessage
 import ServerGameObjectPositionMessage
 import ServerPlayerJoinSeatMessage
 import ServerPlayerLeaveSeatMessage
-import ServerPlayerNoteUpdate
-import ServerPublicNoteUpdate
+import ServerPlayerNoteUpdateMessage
+import ServerPublicNoteUpdateMessage
 import ServerRemoveGameObjectMessage
 import ServerSetGameObjectsFlippedMessage
 import ServerStackInfoMessage
+import ServerStackShuffledInfoMessage
 import game.TaskProcessor.verifyTaskThread
 import game.objects.GameObject
 import game.objects.Stack
@@ -130,16 +131,16 @@ object GameManager {
                 is ClientSortPlayerZoneMessage -> {
                     player.seat?.let { seat -> alignGameObjectsIntoPlayerZone(gameInfo.playerZones[seat], sortById = true) }
                 }
-                is ClientPlayerNoteUpdate -> {
+                is ClientPlayerNoteUpdateMessage -> {
                     player.seat?.let { seat ->
                         playerNotesBySeat[seat] = msg.note
-                        broadcast(ServerPlayerNoteUpdate(msg.note, seat))
+                        broadcast(ServerPlayerNoteUpdateMessage(msg.note, seat))
                     }
                 }
-                is ClientPublicNoteUpdate -> {
+                is ClientPublicNoteUpdateMessage -> {
                     player.seat?.let { seat ->
                         publicNote = msg.note
-                        broadcast(ServerPublicNoteUpdate(msg.note, seat))
+                        broadcast(ServerPublicNoteUpdateMessage(msg.note, seat))
                     }
                 }
             }
@@ -326,6 +327,7 @@ object GameManager {
 
         Util.shuffleListInPlace(stack.stackedObjects)
         broadcastStack(stack)
+        broadcast(ServerStackShuffledInfoMessage(stack.id))
     }
 
     private fun addToStack(stackable: StackableGameObject, stack: Stack, bottom: Boolean = false) {
@@ -417,11 +419,11 @@ object GameManager {
 
         // send player notes
         playerNotesBySeat.entries.forEach {
-            connectingPlayer.send(ServerPlayerNoteUpdate(it.value, it.key))
+            connectingPlayer.send(ServerPlayerNoteUpdateMessage(it.value, it.key))
         }
 
         // send public note
-        broadcast(ServerPublicNoteUpdate(publicNote, -1))
+        broadcast(ServerPublicNoteUpdateMessage(publicNote, -1))
     }
 
     fun playerJoinSeat(player: Player, seatId: Int) {

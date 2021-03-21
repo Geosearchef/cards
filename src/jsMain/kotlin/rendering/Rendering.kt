@@ -12,6 +12,8 @@ import game.objects.GameObject
 import game.objects.Stack
 import input.Input
 import org.w3c.dom.*
+import util.I18n
+import util.Util
 import util.math.Rectangle
 import util.math.Vector
 
@@ -23,8 +25,12 @@ object Rendering : SceneRenderer {
     private const val CARD_OUTLINE_RADIUS = 4.0
     private const val AREA_SELECTION_COLOR = "#4fb3ff"
     private const val CARD_OUTLINE_COLOR_SELECTED = "#4fb3ff"
+
     private const val STACK_COUNT_OUTLINE_RADIUS = 4.0
     private val STACK_COUNT_SIZE = Vector(20.0, 20.0)
+    private val SHUFFLED_INDICATOR_SIZE = Vector(80.0, 20.0)
+    private const val SHUFFLED_INDICATOR_DURATION_MS = 2000
+
     private const val PLAYER_ZONE_CORNER_RADIUS = 10.0
     private const val CARD_PEEK_SCALE = 2.5
 
@@ -105,11 +111,23 @@ object Rendering : SceneRenderer {
 
             when(gameObject) {
                 is Card -> {
-                    renderCard(ctx, gameObject.rect, gameObject.getUsedAsset(inOtherPlayerZone), Table.selectedGameObjects.contains(gameObject))
+                    renderCard(
+                        ctx,
+                        gameObject.rect,
+                        gameObject.getUsedAsset(inOtherPlayerZone),
+                        Table.selectedGameObjects.contains(gameObject)
+                    )
                 }
 
                 is Stack -> {
-                    renderStack(ctx, gameObject.rect, gameObject.getUsedAsset(inOtherPlayerZone), Table.selectedGameObjects.contains(gameObject), gameObject.stackedObjects.size)
+                    renderStack(
+                        ctx,
+                        gameObject.rect,
+                        gameObject.getUsedAsset(inOtherPlayerZone),
+                        Table.selectedGameObjects.contains(gameObject),
+                        gameObject.stackedObjects.size,
+                        showShuffledIndicator = (Util.currentTimeMillis() - gameObject.clientExtension.lastShuffled <= SHUFFLED_INDICATOR_DURATION_MS)
+                    )
                 }
 
                 else -> console.log("Couldn't render GameObject of unknown type")
@@ -121,34 +139,45 @@ object Rendering : SceneRenderer {
         Game.gameInfo.playerZones.filterIndexed { index, playerZone -> index != Game.ownSeat && gameObject in playerZone }
             .any()
 
-    private fun renderStack(ctx: CanvasRenderingContext2D, rect: Rectangle, asset: String?, selected: Boolean, stackedObjectsCount: Int) {
+    private fun renderStack(ctx: CanvasRenderingContext2D, rect: Rectangle, asset: String?, selected: Boolean, stackedObjectsCount: Int, showShuffledIndicator: Boolean) {
         renderCard(ctx, rect, asset, selected)
 
         // render count
+        renderRoundedTextOverlayBox(
+            ctx,
+            Rectangle(rect.center - STACK_COUNT_SIZE / 2.0, STACK_COUNT_SIZE.x, STACK_COUNT_SIZE.y),
+            STACK_COUNT_OUTLINE_RADIUS,
+            stackedObjectsCount.toString())
+
+        // render shuffle indicator
+        if(showShuffledIndicator) {
+            renderRoundedTextOverlayBox(
+                ctx,
+                Rectangle(rect.center - SHUFFLED_INDICATOR_SIZE / 2.0, SHUFFLED_INDICATOR_SIZE.x, SHUFFLED_INDICATOR_SIZE.y),
+                STACK_COUNT_OUTLINE_RADIUS,
+                I18n.get("shuffled-indicator")
+            )
+        }
+    }
+
+    private fun renderRoundedTextOverlayBox(ctx: CanvasRenderingContext2D, rect: Rectangle, outlineRadius: Double, text: String) {
         ctx.color("#FFFFFF")
         ctx.globalAlpha = 0.9
-        ctx.roundRect(
-            Rectangle(rect.center - STACK_COUNT_SIZE / 2.0, STACK_COUNT_SIZE.x, STACK_COUNT_SIZE.y),
-            STACK_COUNT_OUTLINE_RADIUS
-        )
+        ctx.roundRect(rect, outlineRadius)
         ctx.fill()
         ctx.globalAlpha = 1.0
 
         ctx.color("#000000")
         ctx.lineWidth = 0.5
-        ctx.roundRect(
-            Rectangle(rect.center - STACK_COUNT_SIZE / 2.0, STACK_COUNT_SIZE.x, STACK_COUNT_SIZE.y),
-            STACK_COUNT_OUTLINE_RADIUS
-        )
+        ctx.roundRect(rect, outlineRadius)
         ctx.lineWidth = 1.0
         ctx.stroke()
 
         ctx.color("#000000")
         ctx.font = "14px sans-serif"
-        ctx.textBaseline = CanvasTextBaseline.MIDDLE;
-        ctx.fillTextCentered(stackedObjectsCount.toString(), rect.center + Vector(y = 0.25))
-        ctx.textBaseline = CanvasTextBaseline.BOTTOM;
+        ctx.fillTextCentered(text, rect.center + Vector(y = 0.25))
     }
+
 
     private fun renderCard(ctx: CanvasRenderingContext2D, rect: Rectangle, asset: String?, selected: Boolean, peek: Boolean = false) {
         if (asset != null) {

@@ -82,11 +82,14 @@ class ClientAdminDeleteAllGameObjectsMessage() : Message()
 data class ClientAdminSpawnDeckMessage(val deck: String) : Message()
 
 @Serializable
-data class ClientPlayerNoteUpdate(val note: String) : Message()
+data class ClientPlayerNoteUpdateMessage(val note: String) : Message()
 @Serializable
-data class ServerPlayerNoteUpdate(val note: String, val seatId: Int) : Message()
+data class ServerPlayerNoteUpdateMessage(val note: String, val seatId: Int) : Message()
 
 @Serializable
-data class ClientPublicNoteUpdate(val note: String) : Message()
+data class ClientPublicNoteUpdateMessage(val note: String) : Message()
 @Serializable
-data class ServerPublicNoteUpdate(val note: String, val sourceSeat: Int) : Message()
+data class ServerPublicNoteUpdateMessage(val note: String, val sourceSeat: Int) : Message()
+
+@Serializable
+data class ServerStackShuffledInfoMessage(val stackId: Long) : Message()

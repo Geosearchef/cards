@@ -9,8 +9,8 @@ import ClientDealStackMessage
 import ClientFlipObjectMessage
 import ClientGroupObjectsMessage
 import ClientJoinSeatMessage
-import ClientPlayerNoteUpdate
-import ClientPublicNoteUpdate
+import ClientPlayerNoteUpdateMessage
+import ClientPublicNoteUpdateMessage
 import ClientShuffleStacksMessage
 import ClientSortPlayerZoneMessage
 import GameInfo
@@ -22,11 +22,12 @@ import ServerGameObjectPositionMessage
 import ServerLoginMessage
 import ServerPlayerJoinSeatMessage
 import ServerPlayerLeaveSeatMessage
-import ServerPlayerNoteUpdate
-import ServerPublicNoteUpdate
+import ServerPlayerNoteUpdateMessage
+import ServerPublicNoteUpdateMessage
 import ServerRemoveGameObjectMessage
 import ServerSetGameObjectsFlippedMessage
 import ServerStackInfoMessage
+import ServerStackShuffledInfoMessage
 import assets.AssetManager
 import game.objects.Stack
 import game.objects.StackableGameObject
@@ -149,13 +150,19 @@ object Game {
                 Table.onServerStackInfo(stack, stackedObjects)
             }
 
-            is ServerPlayerNoteUpdate -> {
+            is ServerPlayerNoteUpdateMessage -> {
                 playerNotesBySeat[msg.seatId] = msg.note
             }
 
-            is ServerPublicNoteUpdate -> {
+            is ServerPublicNoteUpdateMessage -> {
                 if(msg.sourceSeat != ownSeat) {
                     CardsUI.getUI().setPublicNote(msg.note)
+                }
+            }
+
+            is ServerStackShuffledInfoMessage -> {
+                (Table.gameObjects.find { it.id == msg.stackId } as? Stack)?.let {
+                    it.clientExtension.lastShuffled = Util.currentTimeMillis()
                 }
             }
 
@@ -220,7 +227,7 @@ object Game {
         if(ownSeat == null) {
             CardsUI.getUI().setPlayerNote("")
         } else {
-            WebsocketClient.send(ClientPlayerNoteUpdate(note))
+            WebsocketClient.send(ClientPlayerNoteUpdateMessage(note))
         }
     }
 
@@ -228,7 +235,7 @@ object Game {
         if(ownSeat == null) {
             CardsUI.getUI().setPublicNote("")
         } else {
-            WebsocketClient.send(ClientPublicNoteUpdate(note))
+            WebsocketClient.send(ClientPublicNoteUpdateMessage(note))
         }
     }
 

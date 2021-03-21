@@ -9,8 +9,8 @@ shuffle: Mischen (R)
 deal: Austeilen (D)
 sort: Sortieren (S)
 fullscreen: Vollbild
-hide-ui: Ausblenden
-show-ui: Anzeigen
+hide-ui: Menü
+show-ui: Menü
 join-seat: < Beitreten >
 spawn: Erstellen
 delete-obj: Löschen
@@ -21,3 +21,4 @@ delete-obj-confirm: Folgende Spielobjekte löschen
 delete-all-confirm: Du bist dabei ALLE Spielobjekte ZU LÖSCHEN. Bist du dir da ganz sicher?
 player-note: Spielernotiz
 public-note: Öffentliche Notiz
+shuffled-indicator: Gemischt!

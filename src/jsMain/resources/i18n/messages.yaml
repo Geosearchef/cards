@@ -9,8 +9,8 @@ shuffle: Shuffle (R)
 deal: Deal (D)
 sort: Sort (S)
 fullscreen: Fullscreen
-hide-ui: Hide
-show-ui: Show
+hide-ui: Hide menu
+show-ui: Show menu
 join-seat: < Join >
 spawn: Spawn
 delete-obj: Delete
@@ -21,3 +21,4 @@ delete-obj-confirm: Delete game objects
 delete-all-confirm: You are about to DELETE ALL game objects. Are you sure?
 player-note: player note
 public-note: public note
+shuffled-indicator: Shuffled!

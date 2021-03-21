@@ -42,7 +42,7 @@ sealed class StackableGameObject() : GameObject()  {
 class Card(override var pos: Vector, override val size: Vector, override val frontAsset: String?, override val backAsset: String?) : StackableGameObject()  {
 
     @kotlinx.serialization.Transient
-    override val clientExtension: GameObjectClientExtension = CardClientExtension(this)
+    override val clientExtension: CardClientExtension = CardClientExtension(this)
 }
 
 @Serializable
@@ -55,5 +55,5 @@ class Stack(override var pos: Vector, override val size: Vector, override val fr
     override fun getUsedAsset(inOtherPlayerZone: Boolean): String? = stackedObjects.lastOrNull()?.getUsedAsset(inOtherPlayerZone)
 
     @kotlinx.serialization.Transient
-    override val clientExtension: GameObjectClientExtension = StackClientExtension(this)
+    override val clientExtension: StackClientExtension = StackClientExtension(this)
 }
