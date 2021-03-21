@@ -46,7 +46,7 @@ object PlayerManager {
     fun getPlayerBySession(session: Session): Player? = players.find { it.session == session }
 
     fun attemptLogin(username: String, code: String, session: Session): Boolean {
-        if(! PLAYER_CODES.contains(code) && ! ADMIN_CODES.contains(code)) {
+        if(! PLAYER_CODES.any { it.equals(code, ignoreCase = true) } && ! ADMIN_CODES.any { it.equals(code, ignoreCase = true) }) {
             log.info("${session.getRemoteHostAddress()} attempted to use invalid code")
             return false
         }
@@ -59,7 +59,7 @@ object PlayerManager {
             return false
         }
         if(players.none { it.username == username }) {
-            val admin = ADMIN_CODES.contains(code)
+            val admin = ADMIN_CODES.any { it.equals(code, ignoreCase = true) }
 
             log.info("${session.getRemoteHostAddress()} logged in as $username (admin: $admin)")
             WebsocketServer.send(

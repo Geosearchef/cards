@@ -48,14 +48,23 @@ fun CanvasRenderingContext2D.strokeTextCentered(s: String, v: Vector) {
 
     textBaseline = tB; textAlign = tA
 }
-fun CanvasRenderingContext2D.fillTextLeft(s: String, v: Vector) {
-    val tB = textBaseline; val tA = textAlign
+fun CanvasRenderingContext2D.fillTextLeft(s: String, v: Vector, textBaseline: CanvasTextBaseline = CanvasTextBaseline.TOP) {
+    val tB = this.textBaseline; val tA = textAlign
 
-    textBaseline = CanvasTextBaseline.TOP
+    this.textBaseline = textBaseline
     textAlign = CanvasTextAlign.LEFT
     fillText(s, v.x, v.y)
 
-    textBaseline = tB; textAlign = tA
+    this.textBaseline = tB; textAlign = tA
+}
+fun CanvasRenderingContext2D.fillTextRight(s: String, v: Vector, textBaseline: CanvasTextBaseline = CanvasTextBaseline.TOP) {
+    val tB = this.textBaseline; val tA = textAlign
+
+    this.textBaseline = textBaseline
+    textAlign = CanvasTextAlign.RIGHT
+    fillText(s, v.x, v.y)
+
+    this.textBaseline = tB; textAlign = tA
 }
 fun CanvasRenderingContext2D.strokeTextLeft(s: String, v: Vector) {
     val tB = textBaseline; val tA = textAlign

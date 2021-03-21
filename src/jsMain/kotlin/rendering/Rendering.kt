@@ -196,30 +196,31 @@ object Rendering : SceneRenderer {
             ctx.stroke()
 
             Game.playersBySeat[playerZone.seatId]?.let { playerName ->
-                ctx.font = "18px sans-serif"
-//                ctx.lineWidth = 2.0
-//                ctx.miterLimit= 2.0
-////                ctx.color("#FFFFFF")
-//                ctx.color("#FFFFFF")
-//                ctx.strokeTextCentered(playerName, Vector(playerZone.rect.center.x, playerZone.rect.y) + Vector(0.0, 10.0))
+                ctx.font = "16px sans-serif"
                 ctx.color("#000000")
 //                ctx.color(playerColor)
-                //TODO: alternative: playerColor with black border, LARGE
+                var yPos = 0.0
                 if(playerZone.rect.y < 0) {
-                    ctx.fillTextCentered(playerName, Vector(playerZone.rect.center.x, playerZone.rect.y) - Vector(y = 16.0))
+                    yPos = playerZone.rect.y + playerZone.rect.height - 15.0
                 } else {
-                    ctx.fillTextCentered(playerName, Vector(playerZone.rect.center.x, playerZone.rect.y + playerZone.rect.height) + Vector(y = 16.0))
+                    yPos = playerZone.rect.y + 15.0
                 }
+
+                ctx.fillTextLeft(playerName, Vector(playerZone.rect.x + 7.0, yPos), textBaseline = CanvasTextBaseline.MIDDLE)
             }
 
             Game.playerNotesBySeat[playerZone.seatId]?.let { note ->
-                ctx.font = "18px sans-serif"
+                ctx.font = "16px sans-serif"
                 ctx.color("#000000")
+
+                var yPos = 0.0
                 if(playerZone.rect.y < 0) {
-                    ctx.fillTextCentered(note, Vector(playerZone.rect.center.x, playerZone.rect.y + playerZone.rect.height) + Vector(y = 16.0))
+                    yPos = playerZone.rect.y + playerZone.rect.height - 15.0
                 } else {
-                    ctx.fillTextCentered(note, Vector(playerZone.rect.center.x, playerZone.rect.y) - Vector(y = 16.0))
+                    yPos = playerZone.rect.y + 15.0
                 }
+
+                ctx.fillTextRight(note, Vector(playerZone.rect.x + playerZone.rect.width - 7.0, yPos), textBaseline = CanvasTextBaseline.MIDDLE)
             }
         }
     }
