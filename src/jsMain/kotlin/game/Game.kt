@@ -9,6 +9,7 @@ import ClientDealStackMessage
 import ClientFlipObjectMessage
 import ClientGroupObjectsMessage
 import ClientJoinSeatMessage
+import ClientPlayerNoteUpdate
 import ClientShuffleStacksMessage
 import ClientSortPlayerZoneMessage
 import GameInfo
@@ -20,6 +21,7 @@ import ServerGameObjectPositionMessage
 import ServerLoginMessage
 import ServerPlayerJoinSeatMessage
 import ServerPlayerLeaveSeatMessage
+import ServerPlayerNoteUpdate
 import ServerRemoveGameObjectMessage
 import ServerSetGameObjectsFlippedMessage
 import ServerStackInfoMessage
@@ -44,6 +46,7 @@ object Game {
 
     val playersBySeat: MutableMap<Int, String> = HashMap()
     val players: Collection<String> get() = playersBySeat.values
+    val playerNotesBySeat: MutableMap<Int, String> = HashMap()
 
     var ownSeat: Int? = null
 
@@ -75,6 +78,8 @@ object Game {
                 }
 
                 SeatsView.recreate()
+
+                CardsUI.getUI().setPlayerNote(playerNotesBySeat[msg.seatId] ?: "")
             }
 
             is ServerPlayerLeaveSeatMessage -> {
@@ -142,6 +147,10 @@ object Game {
                 Table.onServerStackInfo(stack, stackedObjects)
             }
 
+            is ServerPlayerNoteUpdate -> {
+                playerNotesBySeat[msg.seatId] = msg.note
+            }
+
             else -> {
                 console.log("Received message of unknown type: ${msg::class}")
             }
@@ -197,6 +206,10 @@ object Game {
 
     fun onAllGameObjectsDeleteRequested() {
         WebsocketClient.send(ClientAdminDeleteAllGameObjectsMessage())
+    }
+
+    fun onPlayerNoteChanged(note: String) {
+        WebsocketClient.send(ClientPlayerNoteUpdate(note))
     }
 
     fun getPlayerColor(playerName: String) : String? = getPlayerSeat(playerName)?.color

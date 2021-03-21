@@ -71,6 +71,7 @@ input {
     /*right: 0;*/
     /*bottom: 0;*/
     z-index: 2;
+    background-color: rgba(230,230,230,0.7);
     /*cursor: pointer;*/
 }
 
@@ -84,7 +85,6 @@ input {
     margin-left: 10pt;
     margin-top: 10pt;
     padding-top: 10pt;
-    background-color: rgba(230,230,230,0.7);
     left: 0;
     top: 0;
     float: left;
@@ -112,12 +112,38 @@ input {
     margin-right: 10pt;
     margin-top: 10pt;
     padding-top: 10pt;
-    background-color: rgba(230,230,230,0.7);
     right: 0;
     top: 0;
     float: right;
 }
 
 #seats-list {
+    margin-top: 12pt;
+}
+
+#public-note-overlay {
+    width: 180pt;
+    height: 36pt;
+    margin-left: 10pt;
+    margin-bottom: 10pt;
+    padding-bottom: 10pt;
+    left: 0;
+    bottom: 0;
+    float: left;
+}
+#player-note-overlay {
+    width: 180pt;
+    height: 36pt;
+    margin-right: 10pt;
+    margin-bottom: 10pt;
+    padding-bottom: 10pt;
+    right: 0;
+    bottom: 0;
+    float: right;
+}
+
+#player-note-overlay > input {
+    display: block;
+    margin: 0 auto;
     margin-top: 12pt;
 }

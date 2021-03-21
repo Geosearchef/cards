@@ -206,6 +206,16 @@ object Rendering : SceneRenderer {
                     ctx.fillTextCentered(playerName, Vector(playerZone.rect.center.x, playerZone.rect.y + playerZone.rect.height) + Vector(y = 16.0))
                 }
             }
+
+            Game.playerNotesBySeat[playerZone.seatId]?.let { note ->
+                ctx.font = "18px sans-serif"
+                ctx.color("#000000")
+                if(playerZone.rect.y < 0) {
+                    ctx.fillTextCentered(note, Vector(playerZone.rect.center.x, playerZone.rect.y + playerZone.rect.height) + Vector(y = 16.0))
+                } else {
+                    ctx.fillTextCentered(note, Vector(playerZone.rect.center.x, playerZone.rect.y) - Vector(y = 16.0))
+                }
+            }
         }
     }
 

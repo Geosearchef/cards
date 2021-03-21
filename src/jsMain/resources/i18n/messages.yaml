@@ -1,6 +1,8 @@
 username: username
 join: Join
 code: code
+seats: Seats
+actions: Actions
 flip: Flip (F)
 group: Group (G)
 shuffle: Shuffle (R)
@@ -17,3 +19,4 @@ spawn-deck-confirm: Which deck do you want to spawn?
 invalid-deck: is not a valid deck!
 delete-obj-confirm: Delete game objects
 delete-all-confirm: You are about to DELETE ALL game objects. Are you sure?
+player-note: player note

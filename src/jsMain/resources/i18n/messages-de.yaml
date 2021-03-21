@@ -1,6 +1,8 @@
 username: Benutzername
 join: Beitreten
 code: Code
+seats: Plätze
+actions: Aktionen
 flip: Flip (F)
 group: Gruppieren (G)
 shuffle: Mischen (R)
@@ -17,3 +19,4 @@ spawn-deck-confirm: Welches Deck möchtest du erstellen?
 invalid-deck: ist kein gültiges Deck!
 delete-obj-confirm: Folgende Spielobjekte löschen
 delete-all-confirm: Du bist dabei ALLE Spielobjekte ZU LÖSCHEN. Bist du dir da ganz sicher?
+player-note: Spielernotiz

@@ -80,3 +80,8 @@ class ClientAdminDeleteAllGameObjectsMessage() : Message()
 
 @Serializable
 data class ClientAdminSpawnDeckMessage(val deck: String) : Message()
+
+@Serializable
+data class ClientPlayerNoteUpdate(val note: String) : Message()
+@Serializable
+data class ServerPlayerNoteUpdate(val note: String, val seatId: Int) : Message()

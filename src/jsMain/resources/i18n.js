@@ -38,6 +38,9 @@ function applyI18n(elements, messages) {
         if(!!element.placeholder) {
             element.placeholder = applyReplacement(element.placeholder, messages)
         }
+        if(element.nodeName === "H3") {
+            element.innerHTML = applyReplacement(element.innerHTML, messages)
+        }
     })
     console.log("I18n done.")
 }
