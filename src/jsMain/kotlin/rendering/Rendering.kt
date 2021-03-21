@@ -177,7 +177,11 @@ object Rendering : SceneRenderer {
         Game.gameInfo.playerZones.forEach { playerZone ->
 //            ctx.globalAlpha = 0.4
             ctx.lineWidth = 2.0
-            val playerColor = Game.gameInfo.seats[playerZone.seatId].color
+            val playerColor =
+                if(! Game.playersBySeat.entries.isEmpty() && Game.playersBySeat[playerZone.seatId] == null)
+                    "#CCCCCC"
+                else
+                    Game.gameInfo.seats[playerZone.seatId].color
             ctx.color(playerColor)
             ctx.globalAlpha = 0.2
             ctx.roundRect(playerZone.rect, PLAYER_ZONE_CORNER_RADIUS)
