@@ -20,3 +20,4 @@ invalid-deck: is not a valid deck!
 delete-obj-confirm: Delete game objects
 delete-all-confirm: You are about to DELETE ALL game objects. Are you sure?
 player-note: player note
+public-note: public note

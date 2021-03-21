@@ -11,6 +11,7 @@ import ClientGameObjectReleasedMessage
 import ClientGroupObjectsMessage
 import ClientJoinSeatMessage
 import ClientPlayerNoteUpdate
+import ClientPublicNoteUpdate
 import ClientShuffleStacksMessage
 import ClientSortPlayerZoneMessage
 import ClientUnstackGameObjectMessage
@@ -23,6 +24,7 @@ import ServerGameObjectPositionMessage
 import ServerPlayerJoinSeatMessage
 import ServerPlayerLeaveSeatMessage
 import ServerPlayerNoteUpdate
+import ServerPublicNoteUpdate
 import ServerRemoveGameObjectMessage
 import ServerSetGameObjectsFlippedMessage
 import ServerStackInfoMessage
@@ -68,6 +70,7 @@ object GameManager {
     )
     val gameObjects: MutableList<GameObject> = ArrayList()
     val playerNotesBySeat: MutableMap<Int, String> = HashMap()
+    var publicNote: String = ""
 
     // create test objects
     fun init() {
@@ -129,7 +132,12 @@ object GameManager {
                         playerNotesBySeat[seat] = msg.note
                         broadcast(ServerPlayerNoteUpdate(msg.note, seat))
                     }
-
+                }
+                is ClientPublicNoteUpdate -> {
+                    player.seat?.let { seat ->
+                        publicNote = msg.note
+                        broadcast(ServerPublicNoteUpdate(msg.note, seat))
+                    }
                 }
             }
 
@@ -400,6 +408,9 @@ object GameManager {
         playerNotesBySeat.entries.forEach {
             connectingPlayer.send(ServerPlayerNoteUpdate(it.value, it.key))
         }
+
+        // send public note
+        broadcast(ServerPublicNoteUpdate(publicNote, -1))
     }
 
     fun playerJoinSeat(player: Player, seatId: Int) {

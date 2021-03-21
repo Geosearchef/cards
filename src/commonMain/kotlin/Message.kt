@@ -85,3 +85,8 @@ data class ClientAdminSpawnDeckMessage(val deck: String) : Message()
 data class ClientPlayerNoteUpdate(val note: String) : Message()
 @Serializable
 data class ServerPlayerNoteUpdate(val note: String, val seatId: Int) : Message()
+
+@Serializable
+data class ClientPublicNoteUpdate(val note: String) : Message()
+@Serializable
+data class ServerPublicNoteUpdate(val note: String, val sourceSeat: Int) : Message()

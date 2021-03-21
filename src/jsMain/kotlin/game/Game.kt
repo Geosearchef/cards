@@ -10,6 +10,7 @@ import ClientFlipObjectMessage
 import ClientGroupObjectsMessage
 import ClientJoinSeatMessage
 import ClientPlayerNoteUpdate
+import ClientPublicNoteUpdate
 import ClientShuffleStacksMessage
 import ClientSortPlayerZoneMessage
 import GameInfo
@@ -22,6 +23,7 @@ import ServerLoginMessage
 import ServerPlayerJoinSeatMessage
 import ServerPlayerLeaveSeatMessage
 import ServerPlayerNoteUpdate
+import ServerPublicNoteUpdate
 import ServerRemoveGameObjectMessage
 import ServerSetGameObjectsFlippedMessage
 import ServerStackInfoMessage
@@ -151,6 +153,12 @@ object Game {
                 playerNotesBySeat[msg.seatId] = msg.note
             }
 
+            is ServerPublicNoteUpdate -> {
+                if(msg.sourceSeat != ownSeat) {
+                    CardsUI.getUI().setPublicNote(msg.note)
+                }
+            }
+
             else -> {
                 console.log("Received message of unknown type: ${msg::class}")
             }
@@ -209,7 +217,19 @@ object Game {
     }
 
     fun onPlayerNoteChanged(note: String) {
-        WebsocketClient.send(ClientPlayerNoteUpdate(note))
+        if(ownSeat == null) {
+            CardsUI.getUI().setPlayerNote("")
+        } else {
+            WebsocketClient.send(ClientPlayerNoteUpdate(note))
+        }
+    }
+
+    fun onPublicNoteChanged(note: String) {
+        if(ownSeat == null) {
+            CardsUI.getUI().setPublicNote("")
+        } else {
+            WebsocketClient.send(ClientPublicNoteUpdate(note))
+        }
     }
 
     fun getPlayerColor(playerName: String) : String? = getPlayerSeat(playerName)?.color

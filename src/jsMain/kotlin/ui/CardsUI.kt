@@ -4,6 +4,7 @@ import game.Game
 import kotlinx.browser.document
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
+import org.w3c.dom.HTMLTextAreaElement
 import util.I18n
 import util.math.Rectangle
 import util.math.Vector
@@ -18,6 +19,7 @@ class CardsUI(width: Int, height: Int) : SceneUI(width, height) {
     }
 
     val playerNoteTextfield = document.getElementById("player-note-textfield") as HTMLInputElement
+    val publicNoteTextArea = document.getElementById("public-note-textarea") as HTMLTextAreaElement
 
     var autoHideEnabled: Boolean = false
     val hideButton = document.getElementById("hide-button") as HTMLInputElement
@@ -30,6 +32,14 @@ class CardsUI(width: Int, height: Int) : SceneUI(width, height) {
         UIOverlay(document.getElementById("seats-overlay") as HTMLDivElement,
             closeArea = Rectangle(width - CLOSE_OVERLAY_DIST, 0.0, CLOSE_OVERLAY_DIST, height / 2.0),
             extendedArea = Rectangle(width - EXTENDED_OVERLAY_DIST, 0.0, EXTENDED_OVERLAY_DIST, height * 0.75)
+        ),
+        UIOverlay(document.getElementById("player-note-overlay") as HTMLDivElement,
+            closeArea = Rectangle(width - CLOSE_OVERLAY_DIST, height / 2.0, CLOSE_OVERLAY_DIST, height / 2.0),
+            extendedArea = Rectangle(width - EXTENDED_OVERLAY_DIST, height / 2.0, EXTENDED_OVERLAY_DIST, height * 0.50)
+        ),
+        UIOverlay(document.getElementById("public-note-overlay") as HTMLDivElement,
+            closeArea = Rectangle(0.0, height / 2.0, CLOSE_OVERLAY_DIST, height / 2.0),
+            extendedArea = Rectangle(0.0, height / 2.0, EXTENDED_OVERLAY_DIST, height * 0.50)
         )
     )
 
@@ -61,13 +71,26 @@ class CardsUI(width: Int, height: Int) : SceneUI(width, height) {
 
     data class UIOverlay(val element: HTMLDivElement, val closeArea: Rectangle, val extendedArea: Rectangle, var currentlyShown: Boolean = false)
 
+    var publicNoteInitializing = true
     init {
         playerNoteTextfield.oninput = {
             Game.onPlayerNoteChanged(playerNoteTextfield.value)
         }
+
+        publicNoteTextArea.oninput = {
+            val note = publicNoteTextArea.value
+            if((note !== "") || ! publicNoteInitializing) {
+                Game.onPublicNoteChanged(note)
+                publicNoteInitializing = false
+            }
+        }
     }
     fun setPlayerNote(s: String) {
         playerNoteTextfield.value = s
+    }
+    fun setPublicNote(s: String) {
+        publicNoteTextArea.value = s
+        publicNoteInitializing = false
     }
 
     override fun isMouseEventOnUI(mousePosition: Vector): Boolean {

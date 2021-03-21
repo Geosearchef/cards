@@ -20,3 +20,4 @@ invalid-deck: ist kein gültiges Deck!
 delete-obj-confirm: Folgende Spielobjekte löschen
 delete-all-confirm: Du bist dabei ALLE Spielobjekte ZU LÖSCHEN. Bist du dir da ganz sicher?
 player-note: Spielernotiz
+public-note: Öffentliche Notiz

@@ -28,7 +28,8 @@ canvas {
 }
 
 input,
-button {
+button,
+textarea {
     font-family: Arial, sans-serif;
     padding: 5pt 8pt;
     background: lightgray;
@@ -39,11 +40,14 @@ button {
     transition: background-color, color;
     -webkit-transition-duration: 0.2s; /* Safari */
     transition-duration: 0.2s;
+}
+input, button {
     text-align: center;
 }
 
 input:hover,
-button:hover {
+button:hover,
+textarea:hover {
     background: #949494;
     color: white;
 }
@@ -123,7 +127,7 @@ input {
 
 #public-note-overlay {
     width: 180pt;
-    height: 36pt;
+    height: 100pt;
     margin-left: 10pt;
     margin-bottom: 10pt;
     padding-bottom: 10pt;
@@ -131,6 +135,15 @@ input {
     bottom: 0;
     float: left;
 }
+#public-note-overlay > textarea {
+    display: block;
+    margin: 0 auto;
+    margin-top: 15pt;
+    margin-bottom: 15pt;
+    height: 73%;
+    width: 80%;
+}
+
 #player-note-overlay {
     width: 180pt;
     height: 36pt;
