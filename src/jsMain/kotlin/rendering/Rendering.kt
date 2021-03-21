@@ -53,6 +53,9 @@ object Rendering : SceneRenderer {
 
         screenRectOnTable = Rectangle(- Table.offset, (width) / Table.scale, height / Table.scale)
 
+//        ctx.color("#222222")
+//        ctx.fillRect(screenRectOnTable)
+
         ctx.color("#333333")
 //        ctx.fillRect(screenRectOnTable)
 //        for(x in 0 until 10) {

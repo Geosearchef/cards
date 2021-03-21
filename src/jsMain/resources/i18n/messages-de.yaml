@@ -12,9 +12,9 @@ fullscreen: Vollbild
 hide-ui: Menü
 show-ui: Menü
 join-seat: < Beitreten >
-spawn: Erstellen
-delete-obj: Löschen
-delete-all: Alle löschen
+spawn: ➕
+delete-obj: ❌
+delete-all: 🗑️
 spawn-deck-confirm: Welches Deck möchtest du erstellen?
 invalid-deck: ist kein gültiges Deck!
 delete-obj-confirm: Folgende Spielobjekte löschen

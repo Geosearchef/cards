@@ -12,9 +12,9 @@ fullscreen: Fullscreen
 hide-ui: Hide menu
 show-ui: Show menu
 join-seat: < Join >
-spawn: Spawn
-delete-obj: Delete
-delete-all: Delete all
+spawn: ➕
+delete-obj: ❌
+delete-all: 🗑️
 spawn-deck-confirm: Which deck do you want to spawn?
 invalid-deck: is not a valid deck!
 delete-obj-confirm: Delete game objects
