@@ -41,6 +41,8 @@ import util.Util.logger
 import util.math.Rectangle
 import util.math.Vector
 import websocket.WebsocketServer.getRemoteHostAddress
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 object GameManager {
 
@@ -50,6 +52,7 @@ object GameManager {
     const val MAX_SELECTED_OBJECTS_TO_CHECK_PLAYER_HAND = 10
 
     val log = logger()
+    val executor = Executors.newSingleThreadScheduledExecutor()
 
     val gameInfo = GameInfo(
         arrayOf(
@@ -379,6 +382,14 @@ object GameManager {
                             playerZone.rect.height / 2.0 - dealtObj.rect.height / 2.0
                         )
                     )
+
+                    executor.schedule({
+                        TaskProcessor.addTask {
+                            if(dealtObj.flipped) {
+                                flipGameObject(dealtObj, null)
+                            }
+                        }
+                    }, 500, TimeUnit.MILLISECONDS)
                 }
             }
         }
