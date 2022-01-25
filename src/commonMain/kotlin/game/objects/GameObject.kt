@@ -1,6 +1,5 @@
 package game.objects
 
-import kotlinx.serialization.Serializable
 import util.math.Rectangle
 import util.math.Vector
 
@@ -56,4 +55,14 @@ class Stack(override var pos: Vector, override val size: Vector, override val fr
 
     @kotlinx.serialization.Transient
     override val clientExtension: StackClientExtension = StackClientExtension(this)
+}
+
+@Serializable
+class TokenObject(override var pos: Vector, override val size: Vector, val color: String) : StackableGameObject()  {
+
+    override val frontAsset: String? = null
+    override val backAsset: String? = null
+
+    @kotlinx.serialization.Transient
+    override val clientExtension: TokenObjectClientExtension = TokenObjectClientExtension(this)
 }

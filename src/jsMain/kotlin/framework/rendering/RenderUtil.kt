@@ -86,10 +86,21 @@ fun CanvasRenderingContext2D.fillCircle(center: Vector, radius: Double) {
     this.arc(center.x, center.y, radius, 0.0, 2.0 * PI)
     this.fill()
 }
+fun CanvasRenderingContext2D.fillElipse(center: Vector, radiusX: Double, radiusY: Double) {
+    this.beginPath()
+    this.ellipse(center.x, center.y, radiusX, radiusY, 0.0, 0.0, 2.0 * PI)
+    this.fill()
+}
 
 fun CanvasRenderingContext2D.strokeCircle(center: Vector, radius: Double) {
     this.beginPath()
     this.arc(center.x, center.y, radius, 0.0, 2.0 * PI)
+    this.stroke()
+}
+
+fun CanvasRenderingContext2D.strokeEllipse(center: Vector, radiusX: Double, radiusY: Double) {
+    this.beginPath()
+    this.ellipse(center.x, center.y, radiusX, radiusY, 0.0, 0.0, 2.0 * PI)
     this.stroke()
 }
 

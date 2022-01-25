@@ -10,6 +10,7 @@ import game.Table
 import game.objects.Card
 import game.objects.GameObject
 import game.objects.Stack
+import game.objects.TokenObject
 import input.Input
 import org.w3c.dom.*
 import util.I18n
@@ -133,6 +134,15 @@ object Rendering : SceneRenderer {
                     )
                 }
 
+                is TokenObject -> {
+                    renderToken(
+                        ctx,
+                        gameObject.rect,
+                        gameObject.color,
+                        Table.selectedGameObjects.contains(gameObject),
+                    )
+                }
+
                 else -> console.log("Couldn't render GameObject of unknown type")
             }
         }
@@ -181,7 +191,6 @@ object Rendering : SceneRenderer {
         ctx.fillTextCentered(text, rect.center + Vector(y = 0.25))
     }
 
-
     private fun renderCard(ctx: CanvasRenderingContext2D, rect: Rectangle, asset: String?, selected: Boolean, peek: Boolean = false) {
         if (asset != null) {
             // white background
@@ -203,6 +212,16 @@ object Rendering : SceneRenderer {
             ctx.color("#333333")
             ctx.fillRect(rect)
         }
+    }
+
+    private fun renderToken(ctx: CanvasRenderingContext2D, rect: Rectangle, color: String, selected: Boolean, peek: Boolean = false) {
+        ctx.color(color)
+        ctx.fillCircle(rect.center, rect.width)
+
+        ctx.color(if (selected) CARD_OUTLINE_COLOR_SELECTED else CARD_OUTLINE_COLOR)
+        ctx.lineWidth = CARD_OUTLINE_WIDTH * (if(peek) CARD_PEEK_SCALE else 1.0)
+        ctx.strokeEllipse(rect.center, rect.width, rect.height)
+        ctx.lineWidth = 1.0
     }
 
     private fun renderPlayerZones(ctx: CanvasRenderingContext2D) {

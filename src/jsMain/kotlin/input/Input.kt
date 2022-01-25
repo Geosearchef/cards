@@ -38,7 +38,7 @@ object Input : SceneInput() {
     private const val MAX_ZOOM = 9.0
 
     private const val MAX_STACK_GRAB_DISTANCE = 10.0
-    private const val STACK_GRAB_DELAY_MS = 300
+    private const val STACK_GRAB_DELAY_MS = 250
 
 
     var mousePositionTable = Vector(0.0, 0.0)

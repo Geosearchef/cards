@@ -10,7 +10,7 @@ import java.util.regex.Pattern
 
 object Api {
 
-    val ASSET_PATTERN = Pattern.compile("\\w+\\.(png|jpg)")
+    val ASSET_PATTERN = Pattern.compile("[\\w-]+\\.(png|jpg)")
     lateinit var ASSETS_FOLDER: Path
 
     val ASSET_TOKEN: String

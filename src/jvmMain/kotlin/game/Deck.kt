@@ -1,6 +1,7 @@
 package game
 
 import game.objects.Card
+import game.objects.TokenObject
 import util.math.Vector
 
 enum class Deck(val identifier: String) {
@@ -58,6 +59,31 @@ enum class Deck(val identifier: String) {
             )
         }
     },
+    LOVE_LETTER("loveletter") {
+        override fun spawn() {
+            val cardSize = Vector(57.0, 57.0 * (1060.0 / 680.0))  // 57.0 x 88.8
+
+            listOf(1, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 7, 8).forEachIndexed { k, cardId ->
+                        GameManager.addGameObject(
+                            Card(
+                                Vector(k * (cardSize.x + 0.0) - 500, 0.0),
+                                cardSize,
+                                "CardLL_${cardId}.jpg",
+                                "CardLL_back.jpg"
+                            )
+                        )
+                }
+
+            GameManager.addGameObject(
+                Card(
+                    Vector(-1.5 * (cardSize.x + 15.0) - 500, 0.0),
+                    cardSize,
+                    "CardLL_ListOfCards.jpg",
+                    "CardLL_ListOfCards.jpg"
+                )
+            )
+        }
+    },
     WIZARD("wizard") {
         override fun spawn() {
             val cardSize = Vector(57.0, 57.0 * (1060.0 / 680.0))  // 57.0 x 88.8
@@ -93,6 +119,26 @@ enum class Deck(val identifier: String) {
                         "CardW_B.jpg"
                     )
                 )
+            }
+
+            GameManager.addGameObject(TokenObject(Vector(-50.0, 0.0), Vector(30.0, 30.0), "#e38629")) // TODO
+        }
+    },
+    PLAYING_CARDS("default") {
+        override fun spawn() {
+            val cardSize = Vector(57.0, 57.0 * (1060.0 / 680.0))  // 57.0 x 88.8
+
+            listOf("C", "D", "H", "S").forEachIndexed { k, color ->
+                listOf("2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A").forEachIndexed { i, card_value ->
+                    GameManager.addGameObject(
+                        Card(
+                            Vector((14 - i) * (cardSize.x + 0.0) - 500, k * cardSize.y - 170),
+                            cardSize,
+                            "playing-cards-${card_value}${color}.png",
+                            "playing-cards-back.png"
+                        )
+                    )
+                }
             }
         }
     };
