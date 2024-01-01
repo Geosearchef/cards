@@ -1,5 +1,6 @@
 package game.objects
 
+import kotlinx.serialization.Serializable
 import util.math.Rectangle
 import util.math.Vector
 
@@ -27,6 +28,12 @@ sealed class GameObject() {
 
 //    @kotlinx.serialization.Transient (is already abstract)
     abstract val clientExtension: GameObjectClientExtension
+}
+
+@Serializable
+class NonStackableGameObject(override var pos: Vector, override val size: Vector, override val frontAsset: String?, override val backAsset: String?) : GameObject() {
+    @kotlinx.serialization.Transient
+    override val clientExtension: NonStackableGameObjectClientExtension = NonStackableGameObjectClientExtension(this)
 }
 
 @Serializable

@@ -1,10 +1,48 @@
 package game
 
 import game.objects.Card
+import game.objects.NonStackableGameObject
 import game.objects.TokenObject
 import util.math.Vector
 
 enum class Deck(val identifier: String) {
+    PASSO("passo") {
+        override fun spawn() {
+            val gridSize = Vector(50.0, 50.0)
+
+            for(x in 1..5) {
+                for(y in 1..5) {
+                    GameManager.addGameObject(
+                        NonStackableGameObject(
+                            Vector(x * gridSize.x - 525, y * gridSize.y - 175),
+                            gridSize,
+                            "QuadraticPlate.png",
+                            "QuadraticPlateBack.png"
+                        )
+                    )
+                }
+            }
+
+            for(x in 1..5) {
+                GameManager.addGameObject(
+                    NonStackableGameObject(
+                        Vector(x * gridSize.x - 525, 1 * gridSize.y - 175),
+                        gridSize,
+                        "RedPiece.png",
+                        "RedPieceBorder.png"
+                    )
+                )
+                GameManager.addGameObject(
+                    NonStackableGameObject(
+                        Vector(x * gridSize.x - 525, 5 * gridSize.y - 175),
+                        gridSize,
+                        "BlackPiece.png",
+                        "BlackPieceBorder.png"
+                    )
+                )
+            }
+        }
+    },
     DEMO("demo") {
         override fun spawn() {
             val cardSize = Vector(57.0, 57.0 * (1060.0 / 680.0))  // 57.0 x 88.8

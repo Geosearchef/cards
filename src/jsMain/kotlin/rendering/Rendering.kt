@@ -7,10 +7,7 @@ import framework.rendering.*
 import framework.scene.Scene.SceneRenderer
 import game.Game
 import game.Table
-import game.objects.Card
-import game.objects.GameObject
-import game.objects.Stack
-import game.objects.TokenObject
+import game.objects.*
 import input.Input
 import org.w3c.dom.*
 import util.I18n
@@ -143,6 +140,15 @@ object Rendering : SceneRenderer {
                     )
                 }
 
+                is NonStackableGameObject -> {
+                    renderNonStackable(
+                        ctx,
+                        gameObject.rect,
+                        gameObject.getUsedAsset(inOtherPlayerZone),
+                        Table.selectedGameObjects.contains(gameObject)
+                    )
+                }
+
                 else -> console.log("Couldn't render GameObject of unknown type")
             }
         }
@@ -191,23 +197,31 @@ object Rendering : SceneRenderer {
         ctx.fillTextCentered(text, rect.center + Vector(y = 0.25))
     }
 
-    private fun renderCard(ctx: CanvasRenderingContext2D, rect: Rectangle, asset: String?, selected: Boolean, peek: Boolean = false) {
+    private fun renderNonStackable(ctx: CanvasRenderingContext2D, rect: Rectangle, asset: String?, selected: Boolean, peek: Boolean = false) {
+        renderCard(ctx, rect, asset, selected, peek, outline = false)
+    }
+
+    private fun renderCard(ctx: CanvasRenderingContext2D, rect: Rectangle, asset: String?, selected: Boolean, peek: Boolean = false, outline: Boolean = true) {
         if (asset != null) {
             // white background
-            ctx.color("#FFFFFF")
-            ctx.roundRect(rect, CARD_OUTLINE_RADIUS)
-            ctx.fill()
+            if(outline) {
+                ctx.color("#FFFFFF")
+                ctx.roundRect(rect, CARD_OUTLINE_RADIUS)
+                ctx.fill()
+            }
 
             AssetManager.get(asset)?.let { it ->
                 val image = if(CardSimulatorOptions.MIPMAPPING) it.getMipmap(rect.width.toInt() * 2, rect.height.toInt() * 2) else it.wrappedImage
                 ctx.drawImage(image, rect.pos.x, rect.pos.y, rect.width, rect.height)
             }
 
-            ctx.color(if (selected) CARD_OUTLINE_COLOR_SELECTED else CARD_OUTLINE_COLOR)
-            ctx.lineWidth = CARD_OUTLINE_WIDTH * (if(peek) CARD_PEEK_SCALE else 1.0)
-            ctx.roundRect(rect, CARD_OUTLINE_RADIUS * (if(peek) CARD_PEEK_SCALE else 1.0))
-            ctx.stroke()
-            ctx.lineWidth = 1.0
+            if(selected || outline) {
+                ctx.color(if (selected) CARD_OUTLINE_COLOR_SELECTED else CARD_OUTLINE_COLOR)
+                ctx.lineWidth = CARD_OUTLINE_WIDTH * (if(peek) CARD_PEEK_SCALE else 1.0)
+                ctx.roundRect(rect, CARD_OUTLINE_RADIUS * (if(peek) CARD_PEEK_SCALE else 1.0))
+                ctx.stroke()
+                ctx.lineWidth = 1.0
+            }
         } else {
             ctx.color("#333333")
             ctx.fillRect(rect)
